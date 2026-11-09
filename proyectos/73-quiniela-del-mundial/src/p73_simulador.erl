@@ -15,7 +15,7 @@
 defaults() ->
   #{participantes => 5000, quinielas => 50, partidos => 104, semilla => 2026,
     rafaga => 2000, rafaga_tarde => 200, caos => true, var => true, workers => 32,
-    rafaga_partido => ultimo}.
+    rafaga_partido => ultimo, abiertos => 6}.
 
 %% ---- servicio (para la UI/HTTP): una simulacion a la vez, en segundo plano ----
 start_link() -> gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
@@ -62,11 +62,17 @@ correr(Opts) -> correr(Opts, fun(_) -> ok end).
 -spec correr(map(), fun((map()) -> any())) -> map().
 correr(Opts0, Prog) ->
   O = maps:merge(defaults(), Opts0),
-  #{participantes := NU, quinielas := NQ, partidos := NP, semilla := Sem, workers := W} = O,
+  #{participantes := NU, quinielas := NQ, partidos := NP, semilla := Sem, workers := W, abiertos := NA} = O,
   T0 = erlang:monotonic_time(millisecond),
   ok = p73_poblacion:limpiar(),
   Partidos = lists:sublist(p73_torneo:partidos(), NP),
   [ok = p73_poblacion:registrar_partido(maps:with([id, fase, grupo, local, visitante, inicio], P)) || P <- Partidos],
+  %% Partidos de demostracion que quedan `programado` tras la simulacion (para poder pronosticar en la UI):
+  %% repiten cruces reales, pero se juegan 1+ dias despues del ultimo partido simulado.
+  UltimoInicio = lists:max([maps:get(inicio, P) || P <- Partidos]),
+  [ok = p73_poblacion:registrar_partido((maps:with([fase, grupo, local, visitante], lists:nth(((I - 1) rem length(Partidos)) + 1, Partidos)))
+                                          #{id => 1000 + I, inicio => UltimoInicio + 86400000 + I * 3 * 3600000})
+   || I <- lists:seq(1, NA)],
   p73_reloj:usar_simulado(maps:get(inicio, hd(Partidos)) - 2 * 86400 * 1000),
   Qs = [{qid(I), nombre_quiniela(I), reglas_de(I)} || I <- lists:seq(1, NQ)],
   [ok = p73_poblacion:registrar_quiniela(Id, N, R) || {Id, N, R} <- Qs],

@@ -15,7 +15,7 @@ El servidor decide el cierre de predicciones con su propio reloj; el reloj del c
 
 ```bash
 rebar3 compile
-rebar3 eunit          # 70 pruebas
+rebar3 eunit          # 71 pruebas
 rebar3 shell          # http://localhost:8080
 ```
 
@@ -58,7 +58,7 @@ p73_quiniela_del_mundial_sup  (rest_for_one)
 | Pronosticos tardios (hora exacta de inicio y reloj atrasado 1 h) | 200/200 rechazados |
 | Prueba de caos (12 rondas `exit(Pid, kill)`) | 12/12 recuperadas, ranking identico |
 | Incremental vs desde cero vs oraculo | 0 diferencias |
-| `rebar3 eunit` | 70 pruebas, 0 fallos (3 corridas seguidas) |
+| `rebar3 eunit` | 71 pruebas, 0 fallos (3 corridas seguidas) |
 
 ## Endpoints
 

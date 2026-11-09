@@ -20,3 +20,10 @@ Las pestañas "Detalle de partido" y "Bitacora y alertas" muestran el historial 
 
 ## 7. Solucion de problemas
 Si la pagina no carga, verifica que el puerto 8080 este abierto en el Security Group y que el nodo este corriendo (`rebar3 shell`).
+
+## Cómo guardar un pronóstico
+
+1. La app arranca vacía: en el Dashboard pulsa **Iniciar Simulación** (token `demo-token`) y espera a que termine.
+2. La simulación juega los partidos reales (quedan `finalizado`; el servidor los cierra por reloj) y deja **6 partidos abiertos** (`programado`, ids 1001-1006).
+3. En "Partido abierto" elige uno, deja el participante `U0001`, escribe el marcador y pulsa guardar: responde 200.
+4. Si eliges un partido ya iniciado/finalizado, el servidor responde 409 (cierre estricto).

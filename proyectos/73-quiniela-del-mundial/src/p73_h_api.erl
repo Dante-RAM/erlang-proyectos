@@ -96,6 +96,7 @@ admin(simulacion, C, Req) ->
   Opts = #{participantes => acotado(C, <<"participantes">>, 1, 20000, 5000),
            quinielas => acotado(C, <<"quinielas">>, 1, 200, 50),
            partidos => acotado(C, <<"partidos">>, 1, 104, 104),
+           abiertos => acotado(C, <<"abiertos">>, 0, 20, 6),
            caos => maps:get(<<"caos">>, C, true) =/= false,
            var => maps:get(<<"var">>, C, true) =/= false},
   case p73_simulador:iniciar(Opts) of

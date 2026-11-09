@@ -72,3 +72,18 @@ pocas_quinielas_test_() ->
                                                      oraculo_independiente_fallos := []}}, R)
                 end} || N <- [1, 2, 3]]
     end}}.
+
+%% Tras la simulacion quedan partidos `programado` donde la UI puede pronosticar.
+partidos_abiertos_test_() ->
+  {timeout, 60,
+   {setup, fun p73_test_util:arrancar/0, fun p73_test_util:parar/1,
+    fun(_) -> [{"quedan N partidos abiertos y aceptan pronostico",
+                fun() ->
+                    R = p73_simulador:correr(#{participantes => 10, quinielas => 2, partidos => 4, rafaga => 4,
+                                               rafaga_tarde => 2, workers => 2, abiertos => 3}),
+                    ?assertMatch(#{consistencia := #{oraculo_independiente_fallos := []}}, R),
+                    Abiertos = [Id || {Id, programado, _} <- ets:tab2list(p73_partidos)],
+                    ?assertEqual(3, length(Abiertos)),
+                    ?assertEqual(ok, p73_participante:pronosticar(<<"U0001">>, hd(Abiertos), 1, 0))
+                end}]
+    end}}.
