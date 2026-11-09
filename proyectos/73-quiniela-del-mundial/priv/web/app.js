@@ -63,6 +63,10 @@ async function cargarResumen() {
     T('Clientes SSE', e.sse_conectados, 'En vivo', 'bg-secondary-container text-on-secondary-fixed', 'conexiones abiertas', 'text-secondary'),
   ].join('');
   pintarSimulacion(e.simulacion || {});
+  // Si el servidor tiene datos nuevos (simulación iniciada en otra pestaña, recarga a mitad, etc.), resincronizar listas.
+  const totalSrv = (e.partidos.programado || 0) + (e.partidos.en_vivo || 0) + (e.partidos.finalizado || 0);
+  if (totalSrv !== estado.partidos.length) cargarPartidos();
+  if ((e.quinielas || 0) !== Object.keys(estado.reglas || {}).length) cargarQuinielas();
   const sim = e.simulacion || {};
   const reciente = Date.now() - estado.ultimaFalla < 15000;
   let nivel = 'ok', txt = 'OPERANDO';
@@ -151,13 +155,16 @@ function pintarPartidos() {
 }
 function actualizarPartido(snap) {
   const i = estado.partidos.findIndex((p) => p.id === snap.id);
+  const cambioEstado = i < 0 || estado.partidos[i].estado !== snap.estado;
   if (i >= 0) estado.partidos[i] = snap; else estado.partidos.push(snap);
   pintarPartidos();
+  if (cambioEstado) llenarSelectorPronostico();
 }
 
 // ---- formulario de pronóstico ----
 function llenarSelectorPronostico() {
   const sel = $('p-partido'); const previo = sel.value;
+  if (!estado.partidos.some((p) => p.estado === 'programado')) { sel.innerHTML = '<option value="">No hay partidos abiertos: inicia una simulación</option>'; etiquetasEquipos(); return; }
   sel.innerHTML = estado.partidos.map((p) => `<option value="${esc(p.id)}" ${p.estado !== 'programado' ? 'disabled' : ''}>#${esc(p.id)} ${esc(p.local)} vs ${esc(p.visitante)}${p.estado === 'programado' ? ' - ' + esc(fechaUtc(p.inicio)) : ' - ' + (p.estado === 'en_vivo' ? 'EN VIVO (cerrado)' : 'finalizado')}</option>`).join('');
   const abiertos = estado.partidos.filter((p) => p.estado === 'programado');
   if (previo && estado.partidos.some((p) => String(p.id) === previo && p.estado === 'programado')) sel.value = previo;
