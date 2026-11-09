@@ -323,7 +323,7 @@ function pintarRecuperaciones() {
 
 // ---- simulación ----
 $('b-sim').addEventListener('click', async () => {
-  const cuerpo = { participantes: +$('s-part').value, quinielas: +$('s-quin').value, partidos: +$('s-pts').value, caos: $('s-caos').checked };
+  const cuerpo = { participantes: +$('s-part').value, quinielas: +$('s-quin').value, partidos: +$('s-pts').value, caos: $('s-caos').checked, pausa_ms: +$('s-vel').value };
   const { status, datos } = await api('/api/simulacion', { method: 'POST', headers: admin(), body: JSON.stringify(cuerpo) });
   const msg = $('sim-estado');
   if (status === 401) msg.textContent = 'Token admin inválido.';

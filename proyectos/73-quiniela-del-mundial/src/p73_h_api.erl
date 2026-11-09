@@ -97,6 +97,7 @@ admin(simulacion, C, Req) ->
            quinielas => acotado(C, <<"quinielas">>, 1, 200, 50),
            partidos => acotado(C, <<"partidos">>, 1, 104, 104),
            abiertos => acotado(C, <<"abiertos">>, 0, 20, 6),
+           pausa_ms => acotado(C, <<"pausa_ms">>, 0, 30000, 0),
            caos => maps:get(<<"caos">>, C, true) =/= false,
            var => maps:get(<<"var">>, C, true) =/= false},
   case p73_simulador:iniciar(Opts) of

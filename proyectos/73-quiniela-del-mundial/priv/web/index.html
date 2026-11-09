@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quiniela del Mundial 2026</title>
-<link rel="stylesheet" href="/tailwind.css?v=3">
-<link rel="stylesheet" href="/estilo.css?v=3">
+<link rel="stylesheet" href="/tailwind.css?v=4">
+<link rel="stylesheet" href="/estilo.css?v=4">
 </head>
 <body class="min-h-full bg-background text-on-surface antialiased">
 <header class="fixed top-0 left-0 right-0 z-50 bg-primary-container shadow-[0_1px_8px_rgba(0,0,0,0.2)]">
@@ -147,12 +147,13 @@
       <span class="px-2 py-0.5 rounded font-mono text-[10px] bg-primary-container text-inverse-on-surface font-bold">ADMIN CONSOLE</span>
      </div>
      <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
-      <div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant" for="s-part">Participantes virtuales</label><input id="s-part" type="number" min="1" max="20000" value="5000" class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-1.5 rounded-lg focus:outline-none focus:bg-surface-container"></div>
+      <div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant" for="s-part">Participantes virtuales</label><input id="s-part" type="number" min="1" max="20000" value="2000" class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-1.5 rounded-lg focus:outline-none focus:bg-surface-container"></div>
       <div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant" for="s-quin">Quinielas a generar</label><input id="s-quin" type="number" min="1" max="200" value="50" class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-1.5 rounded-lg focus:outline-none focus:bg-surface-container"></div>
       <div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant" for="s-pts">Partidos a simular</label><input id="s-pts" type="number" min="1" max="104" value="104" class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-1.5 rounded-lg focus:outline-none focus:bg-surface-container"></div>
       <div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant" for="token">Token admin</label><input id="token" type="password" value="demo-token" autocomplete="off" class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-1.5 rounded-lg focus:outline-none focus:bg-surface-container"></div>
      </div>
      <label class="flex items-center gap-2 font-body-sm text-body-sm"><input type="checkbox" id="s-caos" checked> Inyectar fallas durante los partidos</label>
+     <div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant" for="s-vel">Velocidad</label><select id="s-vel" class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-1.5 rounded-lg focus:outline-none"><option value="4000" selected>Demo: pausa de 4 s antes de cada ventana (permite pronosticar en vivo)</option><option value="1500">Media: pausa de 1.5 s</option><option value="0">M&aacute;xima: sin pausas (prueba de carga)</option></select></div>
      <div class="flex flex-col gap-1.5 bg-surface-container-low p-space-sm rounded-lg">
       <div class="flex items-center justify-between font-label-sm text-label-sm"><span id="sim-estado" class="text-on-surface font-bold">Sin simulaci&oacute;n en curso.</span><span id="sim-n" class="font-mono text-secondary"></span></div>
       <div class="w-full bg-surface-container-highest rounded-full h-2.5 overflow-hidden"><div id="progreso" class="bg-secondary h-2.5 rounded-full transition-all duration-500" style="width:0"></div></div>
@@ -259,6 +260,6 @@
 <footer class="w-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wide px-margin py-space-sm flex flex-wrap justify-between gap-space-sm">
  <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-secondary inline-block"></span>Sincronizaci&oacute;n operativa activa</span><span>FIFA World Cup 2026 &middot; Quiniela OTP</span>
 </footer>
-<script src="/app.js?v=3"></script>
+<script src="/app.js?v=4"></script>
 </body>
 </html>

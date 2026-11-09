@@ -15,7 +15,7 @@
 defaults() ->
   #{participantes => 5000, quinielas => 50, partidos => 104, semilla => 2026,
     rafaga => 2000, rafaga_tarde => 200, caos => true, var => true, workers => 32,
-    rafaga_partido => ultimo, abiertos => 6}.
+    rafaga_partido => ultimo, abiertos => 6, pausa_ms => 0}.
 
 %% ---- servicio (para la UI/HTTP): una simulacion a la vez, en segundo plano ----
 start_link() -> gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
@@ -126,6 +126,9 @@ ventana(Idx, TotalV, Inicio, Ms, Us, QIds, O, RafagaId, Prog, Acc) ->
            [ok = p73_participante:pronosticar(U, maps:get(id, M), L, V)
             || M <- Ms, {L, V} <- [pronostico(Sem, U, maps:get(id, M), maps:get(goles, M))]]
        end, Us, W),
+  %% 1b) Modo demo: pausa con el reloj 30 min antes del inicio, para que una persona pueda
+  %%     pronosticar desde la UI los partidos de esta ventana antes de que cierren.
+  timer:sleep(maps:get(pausa_ms, O, 0)),
   %% 2) Rafaga en el ultimo minuto (solo en el partido elegido).
   {Rafaga, Acc1} =
     case lists:member(RafagaId, Ids) of
