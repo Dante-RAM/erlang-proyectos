@@ -53,6 +53,7 @@ handle_call({campeon, Equipo}, _From, #{id := Id} = S) ->
   end;
 handle_call(info, _From, #{id := Id, nombre := N, quinielas := Q, pronosticos := P} = S) ->
   Campeon = case ets:lookup(p73_campeones, Id) of [{_, E}] -> E; [] -> undefined end,
-  {reply, #{id => Id, nombre => N, quinielas => Q, pronosticos => maps:size(P), campeon => Campeon}, S}.
+  Detalle = [#{partido => Pt, local => L, visitante => V} || {Pt, {L, V}} <- lists:sort(maps:to_list(P))],
+  {reply, #{id => Id, nombre => N, quinielas => Q, pronosticos => maps:size(P), detalle => Detalle, campeon => Campeon}, S}.
 
 handle_cast(_, S) -> {noreply, S}.

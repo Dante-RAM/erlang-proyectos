@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quiniela del Mundial 2026</title>
-<link rel="stylesheet" href="/tailwind.css?v=4">
-<link rel="stylesheet" href="/estilo.css?v=4">
+<link rel="stylesheet" href="/tailwind.css?v=5">
+<link rel="stylesheet" href="/estilo.css?v=5">
 </head>
 <body class="min-h-full bg-background text-on-surface antialiased">
 <header class="fixed top-0 left-0 right-0 z-50 bg-primary-container shadow-[0_1px_8px_rgba(0,0,0,0.2)]">
@@ -127,6 +127,10 @@
       </div>
       <div id="pron-res" hidden class="p-space-sm rounded-lg font-body-sm text-body-sm"></div>
      </form>
+     <div class="mt-space-md border-t border-surface-variant pt-space-md">
+      <div class="flex items-center justify-between mb-space-sm"><h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-secondary">checklist</span>Mis pron&oacute;sticos <span id="mp-quien" class="font-mono text-label-sm text-on-surface-variant"></span></h3><button type="button" id="mp-act" class="font-label-sm text-label-sm text-secondary font-bold hover:underline">Actualizar</button></div>
+      <div id="mp-lista" class="flex flex-col gap-1 max-h-72 overflow-y-auto font-body-sm text-body-sm text-on-surface-variant">Guarda un pron&oacute;stico para verlo aqu&iacute;.</div>
+     </div>
     </div>
    </div>
 
@@ -260,6 +264,6 @@
 <footer class="w-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wide px-margin py-space-sm flex flex-wrap justify-between gap-space-sm">
  <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-secondary inline-block"></span>Sincronizaci&oacute;n operativa activa</span><span>FIFA World Cup 2026 &middot; Quiniela OTP</span>
 </footer>
-<script src="/app.js?v=4"></script>
+<script src="/app.js?v=5"></script>
 </body>
 </html>

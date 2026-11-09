@@ -158,7 +158,7 @@ function actualizarPartido(snap) {
   const cambioEstado = i < 0 || estado.partidos[i].estado !== snap.estado;
   if (i >= 0) estado.partidos[i] = snap; else estado.partidos.push(snap);
   pintarPartidos();
-  if (cambioEstado) llenarSelectorPronostico();
+  if (cambioEstado) { llenarSelectorPronostico(); if (estado.misPron && estado.misPron[snap.id]) cargarMisPron(); }
 }
 
 // ---- formulario de pronóstico ----
@@ -183,10 +183,40 @@ $('prediction-form').addEventListener('submit', async (ev) => {
                    ts_cliente: Date.now() };  // se envía a propósito: el servidor lo ignora
   const { status, datos } = await api('/api/predicciones', { method: 'POST', body: JSON.stringify(cuerpo) });
   const c = $('pron-res'); c.hidden = false;
-  if (status === 200) { c.className = msgClase('ok'); c.textContent = '¡Pronóstico aceptado y guardado!'; }
+  if (status === 200) { c.className = msgClase('ok'); c.textContent = '¡Pronóstico aceptado y guardado!'; estado.misPron = estado.misPron || {}; estado.misPron[cuerpo.partido] = true; cargarMisPron(); }
   else if (status === 409) { c.className = msgClase('falla'); c.textContent = 'Rechazado: el partido ya cerró (lo decide el reloj del servidor).'; }
   else { c.className = msgClase('alerta'); c.textContent = `No se aceptó (${status}): ${(datos && datos.error) || 'error'}`; }
 });
+
+// ---- mis pronósticos (los del participante del formulario) ----
+async function cargarMisPron() {
+  const u = $('p-part').value.trim(); if (!u) return;
+  $('mp-quien').textContent = '(' + u + ')';
+  const { status, datos } = await api('/api/participantes/' + encodeURIComponent(u));
+  const caja = $('mp-lista');
+  if (status !== 200) { caja.textContent = status === 404 ? `${u} no está registrado (inicia una simulación).` : 'No disponible.'; return; }
+  const det = datos.detalle || [];
+  if (!det.length) { caja.textContent = 'Sin pronósticos todavía.'; return; }
+  const porId = Object.fromEntries(estado.partidos.map((p) => [p.id, p]));
+  const sig = (a, b) => Math.sign(a - b);
+  const mios = estado.misPron || {};
+  // Primero los que guardaste tú en esta página, luego el resto (los del simulador).
+  det.sort((a, b) => (mios[b.partido] ? 1 : 0) - (mios[a.partido] ? 1 : 0) || a.partido - b.partido);
+  caja.innerHTML = det.map((d) => {
+    const p = porId[d.partido] || { local: '?', visitante: '?', estado: '?' };
+    let res = '<span class="text-on-surface-variant">por jugarse</span>';
+    if (p.estado === 'en_vivo') res = `<span class="text-secondary font-bold">en vivo ${esc(p.marcador[0])}-${esc(p.marcador[1])}</span>`;
+    if (p.estado === 'finalizado') {
+      const [rl, rv] = p.marcador;
+      const r = (rl === d.local && rv === d.visitante) ? ['exacto ✓', 'text-secondary'] : sig(rl, rv) === sig(d.local, d.visitante) ? ['ganador ✓', 'text-secondary'] : ['falló ✗', 'text-error'];
+      res = `real ${esc(rl)}-${esc(rv)} · <span class="${r[1]} font-bold">${r[0]}</span>`;
+    }
+    const tuyo = mios[d.partido] ? '<span class="px-1.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-bold text-[10px]">TUYO</span> ' : '';
+    return `<div class="flex items-center justify-between bg-surface-container-low rounded px-space-sm py-1"><span>${tuyo}#${esc(d.partido)} ${esc(p.local)} <b class="text-on-surface">${esc(d.local)}-${esc(d.visitante)}</b> ${esc(p.visitante)}</span><span class="text-[11px]">${res}</span></div>`;
+  }).join('');
+}
+$('mp-act').addEventListener('click', cargarMisPron);
+$('p-part').addEventListener('change', cargarMisPron);
 
 // ---- detalle de partido ----
 async function cargarListaDetalle() {
