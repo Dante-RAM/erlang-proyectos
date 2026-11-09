@@ -9,7 +9,7 @@
 iniciar(Puerto) ->
   cowboy:start_clear(?LISTENER,
                      [{port, Puerto}, {max_connections, 20000}],
-                     #{env => #{dispatch => dispatch()}, idle_timeout => 120000, request_timeout => 15000}).
+                     #{env => #{dispatch => dispatch()}, middlewares => [cowboy_router, p73_sin_cache, cowboy_handler], idle_timeout => 120000, request_timeout => 15000}).
 
 detener() ->
   case cowboy:stop_listener(?LISTENER) of
