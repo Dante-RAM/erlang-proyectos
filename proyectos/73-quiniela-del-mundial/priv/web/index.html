@@ -4,152 +4,260 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quiniela del Mundial 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@100..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/estilo.css">
 <link rel="stylesheet" href="/tailwind.css">
+<link rel="stylesheet" href="/estilo.css">
 </head>
 <body class="min-h-full bg-background text-on-surface antialiased">
 <header class="fixed top-0 left-0 right-0 z-50 bg-primary-container shadow-[0_1px_8px_rgba(0,0,0,0.2)]">
- <div class="min-h-16 w-full px-margin-mobile md:px-margin flex flex-wrap items-center justify-between gap-space-md py-2">
+ <div class="min-h-16 w-full px-margin flex flex-wrap items-center justify-between gap-space-lg py-1">
   <div class="flex items-center gap-space-md shrink-0">
    <div class="h-9 w-9 rounded-lg bg-surface-container-highest/20 flex items-center justify-center text-xl" aria-hidden="true">&#9917;</div>
    <div class="flex flex-col">
     <div class="flex items-center gap-space-sm">
      <h1 class="font-headline-sm text-headline-sm text-on-primary tracking-tight font-bold">Quiniela Mundial 2026</h1>
-     <span id="semaforo" role="status" class="inline-flex items-center px-1.5 rounded font-label-sm text-label-sm font-bold bg-secondary-container text-on-secondary-fixed">CONECTANDO</span>
+     <span class="hidden xl:inline-flex items-center px-space-sm py-0.5 rounded bg-surface-container-highest/20 text-inverse-on-surface font-label-sm text-label-sm border border-outline-variant/30 uppercase tracking-wider">Copa del Mundo FIFA 2026</span>
     </div>
-    <div class="flex items-center gap-1.5">
-     <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-fixed opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-secondary-fixed"></span></span>
-     <span class="font-label-sm text-label-sm text-on-primary-container font-medium">SSE <span id="sse-n">0</span> en l&iacute;nea</span>
-     <span id="reloj" class="font-label-sm text-label-sm text-on-primary-container ml-2">reloj: &mdash;</span>
+    <div class="flex items-center gap-space-sm">
+     <div class="flex items-center gap-1.5">
+      <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-fixed opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-secondary-fixed"></span></span>
+      <span class="font-label-sm text-label-sm text-on-primary-container font-medium">SSE conectado (<span id="sse-n">0</span> en l&iacute;nea)</span>
+     </div>
+     <span id="semaforo" role="status" class="hidden lg:inline-flex items-center px-1.5 rounded font-label-sm text-label-sm font-bold bg-secondary-container text-on-secondary-fixed">CONECTANDO</span>
     </div>
    </div>
   </div>
-  <nav role="tablist" class="flex items-center gap-space-xs order-3 w-full lg:order-none lg:w-auto overflow-x-auto">
-   <button role="tab" aria-selected="true" data-vista="dashboard" class="tab px-space-md py-space-sm rounded-lg font-label-lg text-label-lg uppercase tracking-wide transition-colors whitespace-nowrap">Dashboard</button>
-   <button role="tab" aria-selected="false" data-vista="detalle" class="tab px-space-md py-space-sm rounded-lg font-label-lg text-label-lg uppercase tracking-wide transition-colors whitespace-nowrap">Detalle de partido</button>
-   <button role="tab" aria-selected="false" data-vista="bitacora" class="tab px-space-md py-space-sm rounded-lg font-label-lg text-label-lg uppercase tracking-wide transition-colors whitespace-nowrap">Bit&aacute;cora y alertas</button>
+  <nav role="tablist" class="hidden lg:flex items-center gap-space-xs">
+   <button role="tab" aria-selected="true" data-vista="dashboard" class="tab px-space-md py-space-sm rounded-lg font-label-lg text-label-lg uppercase tracking-wide transition-colors">Dashboard Principal</button>
+   <button role="tab" aria-selected="false" data-vista="detalle" class="tab px-space-md py-space-sm rounded-lg font-label-lg text-label-lg uppercase tracking-wide transition-colors">Detalle de Partido</button>
+   <button role="tab" aria-selected="false" data-vista="bitacora" class="tab px-space-md py-space-sm rounded-lg font-label-lg text-label-lg uppercase tracking-wide transition-colors">Bit&aacute;cora &amp; Alertas</button>
   </nav>
   <div class="flex items-center gap-space-md shrink-0">
-   <div class="flex items-center bg-surface-container-highest/10 rounded-lg p-0.5 border border-outline-variant/20">
-    <label class="sr-only" for="sel-quiniela">Quiniela activa</label>
-    <select id="sel-quiniela" class="bg-transparent text-inverse-on-surface font-body-sm text-body-sm px-space-sm py-1 focus:outline-none cursor-pointer max-w-[200px]"></select>
-   </div>
-   <button id="b-falla-h" type="button" class="inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-error text-on-error font-label-sm text-label-sm uppercase font-bold transition-all active:scale-95"><span class="hidden md:inline">Matar proceso</span></button>
+   <span id="reloj" class="hidden md:inline font-label-sm text-label-sm text-on-primary-container">reloj: &mdash;</span>
+   <button id="b-falla-h" type="button" class="inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-error hover:bg-error-container text-on-error hover:text-on-error-container font-label-sm text-label-sm uppercase font-bold transition-all shadow-[0_1px_4px_rgba(186,26,26,0.3)] active:scale-95"><span class="material-symbols-outlined text-[14px]">bolt</span><span class="hidden md:inline">Matar Proceso</span></button>
   </div>
  </div>
+ <nav role="tablist" class="lg:hidden flex items-center gap-space-xs px-margin-mobile pb-2 overflow-x-auto">
+  <button role="tab" data-vista="dashboard" class="tab px-space-md py-space-sm rounded-lg font-label-md text-label-md uppercase whitespace-nowrap">Dashboard</button>
+  <button role="tab" data-vista="detalle" class="tab px-space-md py-space-sm rounded-lg font-label-md text-label-md uppercase whitespace-nowrap">Detalle</button>
+  <button role="tab" data-vista="bitacora" class="tab px-space-md py-space-sm rounded-lg font-label-md text-label-md uppercase whitespace-nowrap">Bit&aacute;cora</button>
+ </nav>
 </header>
 
-<main class="w-full pt-28 lg:pt-20 pb-space-xl">
-<div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin">
+<main class="w-full pt-16 lg:pt-16 bg-background min-h-screen">
 
-<!-- ============ DASHBOARD ============ -->
-<section id="v-dashboard" class="flex flex-col gap-space-lg">
- <div id="resumen" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-gutter"></div>
- <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
-  <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
-   <h2 class="font-headline-sm text-headline-sm mb-space-md">Ranking en vivo</h2>
-   <div class="flex flex-wrap gap-space-md items-end mb-space-sm">
-    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="buscar">Buscar participante</label>
-     <input id="buscar" placeholder="U0042" class="mt-1 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5 font-body-md text-body-md"></div>
+<!-- =================== DASHBOARD PRINCIPAL (Stitch) =================== -->
+<div id="v-dashboard" class="flex flex-col w-full lg:pt-0 pt-10">
+ <section class="w-full bg-surface-container-low px-margin py-space-sm shadow-sm">
+  <div class="flex flex-wrap items-center justify-between gap-space-md">
+   <div class="flex flex-wrap items-center gap-space-md">
+    <div class="inline-flex items-center gap-2 bg-surface-container-lowest px-space-md py-1.5 rounded-lg shadow-sm">
+     <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-fixed opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span></span>
+     <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface">Nodo principal:</span>
+     <span id="nodo-estado" class="font-label-sm text-label-sm text-secondary uppercase font-bold">OPERANDO</span>
+    </div>
+    <div class="inline-flex items-center gap-1.5 bg-surface-container-lowest px-space-md py-1.5 rounded-lg shadow-sm text-on-surface-variant font-label-sm text-label-sm"><span class="material-symbols-outlined text-[16px] text-secondary">schedule</span><span>Reloj:</span><span id="reloj2" class="font-bold text-on-surface">&mdash;</span></div>
+    <div class="inline-flex items-center gap-1.5 bg-surface-container-lowest px-space-md py-1.5 rounded-lg shadow-sm text-on-surface-variant font-label-sm text-label-sm"><span class="material-symbols-outlined text-[16px] text-outline">sync</span><span>Reconexiones SSE:</span><span id="reconex" class="font-bold text-on-surface">0</span></div>
+    <div class="hidden xl:inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-surface-container-highest/60 text-on-surface font-label-sm text-label-sm"><span class="material-symbols-outlined text-[15px] text-secondary">cloud_done</span><span>Backend Erlang/OTP + SSE en vivo</span></div>
    </div>
-   <div id="buscado" hidden class="rounded px-space-md py-space-sm mb-space-sm font-body-md text-body-md"></div>
-   <div id="reglas" class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm"></div>
-   <div class="overflow-x-auto">
-   <table class="w-full text-left font-body-sm text-body-sm">
-    <thead class="bg-primary-container text-on-primary"><tr><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">#</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase">Participante</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">Pts</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">Exactos</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">Ganador</th></tr></thead>
-    <tbody id="ranking" class="divide-y divide-surface-container-high"></tbody>
-   </table></div>
+   <button id="b-falla-top" type="button" class="inline-flex items-center gap-2 bg-error hover:bg-on-error-container text-on-error px-space-lg py-2 rounded-lg font-headline-sm text-label-lg transition-all shadow-md active:scale-95 cursor-pointer"><span class="material-symbols-outlined text-[18px]">warning</span><span>Matar proceso al azar</span></button>
   </div>
-  <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
-   <h2 class="font-headline-sm text-headline-sm mb-space-md">Partidos</h2>
-   <label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="filtro-estado">Mostrar</label>
-   <select id="filtro-estado" class="mt-1 mb-space-sm bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5 font-body-md text-body-md"><option value="en_vivo">En vivo</option><option value="">Todos</option><option value="finalizado">Finalizados</option><option value="programado">Programados</option></select>
-   <div id="partidos" class="flex flex-col"></div>
-  </div>
+ </section>
+ <div id="ban-var" hidden class="w-full bg-tertiary-fixed text-on-tertiary-fixed px-margin py-2 flex items-center justify-between shadow-sm">
+  <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-tertiary-container">sports_and_outdoors</span>
+   <span class="font-label-sm text-label-sm uppercase font-bold tracking-wider bg-tertiary-container text-tertiary-fixed px-2 py-0.5 rounded">VAR</span>
+   <span id="ban-var-txt" class="font-body-sm text-body-sm font-semibold"></span></div>
+  <span id="ban-var-id" class="font-mono text-label-sm text-on-tertiary-fixed-variant hidden md:inline"></span>
  </div>
- <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
-  <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
-   <h2 class="font-headline-sm text-headline-sm mb-space-md">Simulaci&oacute;n del escenario</h2>
-   <div class="flex flex-wrap gap-space-md">
-    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="s-part">Participantes</label><input id="s-part" type="number" value="5000" min="1" max="20000" class="mt-1 w-28 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
-    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="s-quin">Quinielas</label><input id="s-quin" type="number" value="50" min="1" max="200" class="mt-1 w-24 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
-    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="s-pts">Partidos</label><input id="s-pts" type="number" value="104" min="1" max="104" class="mt-1 w-24 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
-   </div>
-   <label class="flex items-center gap-2 mt-space-md font-body-md text-body-md"><input type="checkbox" id="s-caos" checked> Inyectar fallas durante los partidos</label>
-   <label class="block mt-space-md font-label-md text-label-md text-on-surface-variant uppercase" for="token">Token admin</label>
-   <input id="token" type="password" value="demo-token" autocomplete="off" class="mt-1 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5">
-   <button id="b-sim" class="mt-space-md ml-space-sm px-space-lg py-2 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg uppercase tracking-wide hover:opacity-90">Iniciar simulaci&oacute;n</button>
-   <div class="h-2 bg-surface-container-high rounded-full overflow-hidden mt-space-md"><div id="progreso" class="h-full bg-secondary transition-all" style="width:0"></div></div>
-   <div id="sim-estado" class="font-body-sm text-body-sm text-on-surface-variant mt-space-sm">Sin simulaci&oacute;n en curso.</div>
-   <pre id="sim-reporte" hidden class="mt-space-sm bg-primary-container text-inverse-on-surface rounded-lg p-space-md font-mono text-[11px] overflow-auto max-h-64"></pre>
-  </div>
-  <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
-   <h2 class="font-headline-sm text-headline-sm mb-space-md">Pronosticar (API p&uacute;blica)</h2>
-   <div class="flex flex-wrap gap-space-md">
-    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="p-part">Participante</label><input id="p-part" value="U0001" class="mt-1 w-28 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
-    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="p-partido">Partido #</label><input id="p-partido" type="number" value="1" min="1" max="104" class="mt-1 w-20 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
-    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="p-l">Local</label><input id="p-l" type="number" value="1" min="0" max="30" class="mt-1 w-16 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
-    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="p-v">Visitante</label><input id="p-v" type="number" value="0" min="0" max="30" class="mt-1 w-16 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
-   </div>
-   <button id="b-pron" class="mt-space-md px-space-lg py-2 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg uppercase tracking-wide hover:opacity-90">Enviar pron&oacute;stico</button>
-   <div id="pron-res" hidden class="rounded px-space-md py-space-sm mt-space-sm font-body-md text-body-md"></div>
-   <p class="font-body-sm text-body-sm text-on-surface-variant mt-space-sm">El cierre lo decide el reloj del servidor, nunca la hora del navegador.</p>
-   <h2 class="font-headline-sm text-headline-sm mt-space-xl mb-space-md">Inyectar falla (matar un proceso)</h2>
-   <label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="f-obj">Objetivo</label>
-   <select id="f-obj" class="mt-1 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"><option value="quiniela">Una quiniela</option><option value="partido">Un partido</option><option value="participante">Un participante</option></select>
-   <button id="b-falla" class="mt-space-md ml-space-sm px-space-lg py-2 rounded-lg bg-error text-on-error font-label-lg text-label-lg uppercase tracking-wide hover:opacity-90">Matar proceso al azar</button>
-   <div id="falla-res" hidden class="rounded px-space-md py-space-sm mt-space-sm font-body-md text-body-md"></div>
-  </div>
- </div>
-</section>
+ <section class="w-full px-margin py-space-lg">
+  <div id="resumen" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-10 gap-space-sm"></div>
+ </section>
+ <section class="w-full px-margin pb-space-xl">
+  <div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter">
+   <div class="xl:col-span-7 flex flex-col gap-gutter">
+    <div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden flex flex-col">
+     <div class="p-space-md bg-surface-container-low flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-md">
+      <div>
+       <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-secondary">leaderboard</span><h2 class="font-headline-sm text-headline-sm text-on-surface">Tabla de Ranking en Vivo</h2></div>
+       <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Rec&aacute;lculo incremental tras cada gol y pitazo final</p>
+      </div>
+      <div class="flex items-center gap-2"><label class="sr-only" for="sel-quiniela">Quiniela</label>
+       <select id="sel-quiniela" class="bg-surface-container-lowest text-on-surface font-label-lg text-label-lg px-space-md py-1.5 rounded-lg shadow-sm cursor-pointer focus:outline-none max-w-[260px]"></select></div>
+     </div>
+     <div class="p-space-sm bg-surface-container-lowest flex items-center gap-space-md">
+      <div class="relative flex-1"><span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-outline">search</span>
+       <input id="buscar" type="text" placeholder="Buscar participante por ID (ej. U0042)" class="w-full bg-surface-container-low text-on-surface font-body-sm text-body-sm pl-9 pr-space-md py-2 rounded-lg focus:outline-none focus:bg-surface-container"></div>
+      <span id="n-clasif" class="font-label-sm text-label-sm text-on-surface-variant px-space-sm hidden sm:inline"></span>
+     </div>
+     <div id="buscado" hidden class="mx-space-sm mb-space-sm rounded-lg px-space-md py-space-sm font-body-sm text-body-sm"></div>
+     <div class="overflow-x-auto w-full">
+      <table class="w-full text-left font-body-md text-body-md border-collapse">
+       <thead><tr class="bg-primary-container text-inverse-on-surface font-label-md text-label-md uppercase tracking-wider">
+        <th class="py-2.5 px-3 text-center w-12">Pos</th><th class="py-2.5 px-3">Participante</th><th class="py-2.5 px-3 text-center">Aciertos exactos</th><th class="py-2.5 px-3 text-center">Ganadores</th><th class="py-2.5 px-3 text-right">Puntos totales</th></tr></thead>
+       <tbody id="ranking" class="font-body-sm text-body-sm"></tbody>
+      </table>
+     </div>
+     <div class="p-space-sm bg-surface-container-low flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant"><span id="reglas"></span><span>Top 20 &middot; desempate: puntos, exactos, ganadores</span></div>
+    </div>
 
-<!-- ============ DETALLE DE PARTIDO (pantalla de Stitch) ============ -->
-<section id="v-detalle" hidden class="flex flex-col gap-space-lg">
- <div class="flex flex-wrap items-center justify-between gap-space-md">
-  <div class="flex flex-wrap items-center gap-space-sm font-label-md text-label-md text-on-surface-variant uppercase tracking-wide">
-   <span>Torneo 2026</span><span>/</span><span id="d-ruta">Elige un partido</span>
+    <div class="bg-surface-container-lowest rounded-lg shadow-sm p-space-lg flex flex-col gap-space-md">
+     <div class="flex flex-wrap items-center justify-between gap-space-sm pb-space-sm bg-surface-container-low -mx-space-lg -mt-space-lg p-space-md rounded-t-lg">
+      <div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">add_circle</span><h3 class="font-headline-sm text-headline-sm text-on-surface">Ingresar Pron&oacute;stico R&aacute;pido</h3></div>
+      <span class="inline-flex items-center gap-1 bg-tertiary-fixed text-on-tertiary-fixed px-2 py-1 rounded font-label-sm text-label-sm font-bold"><span class="material-symbols-outlined text-[14px]">lock_clock</span>Cierre al inicio del partido (reloj del servidor)</span>
+     </div>
+     <form id="prediction-form" class="flex flex-col gap-space-md">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+       <div class="flex flex-col gap-1"><label class="font-label-lg text-label-lg text-on-surface" for="p-part">Participante registrado (ID)</label>
+        <input id="p-part" required value="U0001" class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-2 rounded-lg focus:outline-none focus:bg-surface-container shadow-sm"></div>
+       <div class="flex flex-col gap-1"><label class="font-label-lg text-label-lg text-on-surface" for="p-partido">Partido abierto para pron&oacute;sticos</label>
+        <select id="p-partido" required class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-2 rounded-lg focus:outline-none focus:bg-surface-container shadow-sm"></select></div>
+      </div>
+      <div class="bg-surface-container-low p-space-md rounded-lg flex flex-col items-center">
+       <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant mb-space-sm font-bold">Marcador pronosticado</span>
+       <div class="flex items-center justify-center gap-space-lg w-full max-w-sm">
+        <div class="flex flex-col items-center gap-1 flex-1"><span id="p-eq-l" class="font-headline-sm text-label-lg text-on-surface">Local</span>
+         <input id="p-l" type="number" min="0" max="30" value="1" class="w-14 h-12 text-center font-metric-display text-metric-display bg-surface-container-lowest text-on-surface rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"><span class="text-[11px] text-on-surface-variant font-label-sm">Local</span></div>
+        <div class="font-headline-md text-headline-md text-outline font-bold mt-2">VS</div>
+        <div class="flex flex-col items-center gap-1 flex-1"><span id="p-eq-v" class="font-headline-sm text-label-lg text-on-surface">Visitante</span>
+         <input id="p-v" type="number" min="0" max="30" value="0" class="w-14 h-12 text-center font-metric-display text-metric-display bg-surface-container-lowest text-on-surface rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"><span class="text-[11px] text-on-surface-variant font-label-sm">Visitante</span></div>
+       </div>
+      </div>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-space-xs">
+       <div class="flex items-center gap-2 text-on-surface-variant font-mono text-[11px]"><span class="material-symbols-outlined text-[16px] text-secondary">verified_user</span><span>El servidor ignora la hora del navegador</span></div>
+       <button id="b-pron" type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-secondary hover:bg-on-secondary-container text-on-secondary px-space-xl py-2.5 rounded-lg font-headline-sm text-label-lg font-bold shadow-md active:scale-95 transition-all cursor-pointer"><span class="material-symbols-outlined text-[18px]">save</span><span>Guardar Pron&oacute;stico</span></button>
+      </div>
+      <div id="pron-res" hidden class="p-space-sm rounded-lg font-body-sm text-body-sm"></div>
+     </form>
+    </div>
+   </div>
+
+   <div class="xl:col-span-5 flex flex-col gap-gutter">
+    <div class="bg-surface-container-lowest rounded-lg shadow-sm p-space-md flex flex-col gap-space-md">
+     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+      <div><h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5"><span class="material-symbols-outlined text-secondary">live_tv</span>Transmisi&oacute;n &amp; Fixture</h3>
+       <p class="font-body-sm text-body-sm text-on-surface-variant">Marcadores y estado de cada partido</p></div>
+      <span class="font-mono text-label-sm text-on-surface-variant bg-surface-container px-2 py-1 rounded">Copa FIFA 2026</span>
+     </div>
+     <div id="tabs-partidos" class="flex flex-wrap items-center gap-1.5 p-1 bg-surface-container-low rounded-lg"></div>
+     <div id="partidos" class="flex flex-col gap-space-sm max-h-[640px] overflow-y-auto"></div>
+    </div>
+
+    <div class="bg-surface-container-lowest rounded-lg shadow-sm p-space-md flex flex-col gap-space-md">
+     <div class="flex items-center justify-between pb-2 bg-surface-container-low -mx-space-md -mt-space-md p-space-md rounded-t-lg">
+      <div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">tune</span><h3 class="font-headline-sm text-headline-sm text-on-surface">Panel de Simulaci&oacute;n &amp; Carga Masiva</h3></div>
+      <span class="px-2 py-0.5 rounded font-mono text-[10px] bg-primary-container text-inverse-on-surface font-bold">ADMIN CONSOLE</span>
+     </div>
+     <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+      <div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant" for="s-part">Participantes virtuales</label><input id="s-part" type="number" min="1" max="20000" value="5000" class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-1.5 rounded-lg focus:outline-none focus:bg-surface-container"></div>
+      <div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant" for="s-quin">Quinielas a generar</label><input id="s-quin" type="number" min="1" max="200" value="50" class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-1.5 rounded-lg focus:outline-none focus:bg-surface-container"></div>
+      <div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant" for="s-pts">Partidos a simular</label><input id="s-pts" type="number" min="1" max="104" value="104" class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-1.5 rounded-lg focus:outline-none focus:bg-surface-container"></div>
+      <div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant" for="token">Token admin</label><input id="token" type="password" value="demo-token" autocomplete="off" class="bg-surface-container-low text-on-surface font-body-sm text-body-sm px-space-md py-1.5 rounded-lg focus:outline-none focus:bg-surface-container"></div>
+     </div>
+     <label class="flex items-center gap-2 font-body-sm text-body-sm"><input type="checkbox" id="s-caos" checked> Inyectar fallas durante los partidos</label>
+     <div class="flex flex-col gap-1.5 bg-surface-container-low p-space-sm rounded-lg">
+      <div class="flex items-center justify-between font-label-sm text-label-sm"><span id="sim-estado" class="text-on-surface font-bold">Sin simulaci&oacute;n en curso.</span><span id="sim-n" class="font-mono text-secondary"></span></div>
+      <div class="w-full bg-surface-container-highest rounded-full h-2.5 overflow-hidden"><div id="progreso" class="bg-secondary h-2.5 rounded-full transition-all duration-500" style="width:0"></div></div>
+     </div>
+     <button id="b-sim" type="button" class="w-full inline-flex items-center justify-center gap-2 bg-primary-container text-on-primary px-space-md py-2 rounded-lg font-headline-sm text-label-lg hover:bg-on-background transition-colors cursor-pointer shadow-sm active:scale-95"><span class="material-symbols-outlined text-[16px]">play_arrow</span><span>Iniciar Simulaci&oacute;n</span></button>
+     <pre id="sim-reporte" hidden class="bg-primary-container text-inverse-on-surface rounded-lg p-space-md font-mono text-[11px] overflow-auto max-h-64"></pre>
+     <div class="bg-error-container/40 p-space-sm rounded-lg flex flex-col gap-2">
+      <div class="flex items-center justify-between"><div class="flex items-center gap-1.5 text-error font-headline-sm text-label-lg"><span class="material-symbols-outlined text-[18px]">emergency_home</span><span>Inyector de Caos en Vivo</span></div><span class="font-label-sm text-label-sm text-error font-bold uppercase">Peligro</span></div>
+      <select id="f-obj" class="bg-surface-container-lowest text-on-surface font-label-sm text-label-sm py-1.5 px-space-sm rounded-lg shadow-sm"><option value="quiniela">Una quiniela</option><option value="partido">Un partido</option><option value="participante">Un participante</option></select>
+      <button id="b-falla" type="button" class="w-full inline-flex items-center justify-center gap-2 bg-error hover:bg-on-error-container text-on-error px-space-md py-2.5 rounded-lg font-headline-sm text-label-lg font-bold shadow-md transition-all active:scale-95 cursor-pointer"><span class="material-symbols-outlined text-[18px]">bolt</span><span>Matar proceso al azar</span></button>
+      <div id="falla-res" class="font-mono text-[10px] text-on-surface-variant bg-surface-container-lowest p-2 rounded max-h-16 overflow-y-auto">[LOG] Sin fallas inyectadas desde que abriste esta p&aacute;gina.</div>
+     </div>
+    </div>
+   </div>
   </div>
+ </section>
+</div>
+
+<!-- =================== DETALLE DE PARTIDO (Stitch) =================== -->
+<div id="v-detalle" hidden class="flex flex-col w-full pt-10 lg:pt-0">
+ <div class="w-full px-margin py-space-md flex flex-wrap items-center justify-between gap-space-sm">
+  <div class="flex flex-wrap items-center gap-space-sm font-label-md text-label-md text-on-surface-variant uppercase tracking-wide"><span>Torneo 2026</span><span>/</span><span id="d-ruta">Elige un partido</span></div>
   <div class="flex items-center gap-space-sm">
    <label class="sr-only" for="d-sel">Partido</label>
-   <select id="d-sel" class="bg-surface-container-lowest border border-outline-variant rounded px-space-sm py-1.5 font-body-sm text-body-sm max-w-[320px]"></select>
-   <button id="b-sync" type="button" class="inline-flex items-center gap-1 px-space-md py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container font-label-md text-label-md uppercase tracking-wide">Actualizar</button>
+   <select id="d-sel" class="bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded px-space-sm py-1.5 shadow-sm max-w-[320px]"></select>
+   <button id="b-sync" type="button" class="inline-flex items-center gap-1 px-space-md py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-label-md text-label-md uppercase tracking-wide transition-colors"><span class="material-symbols-outlined text-[16px]">sync</span><span>Actualizar telemetr&iacute;a</span></button>
+   <button id="b-falla-d" type="button" class="inline-flex items-center gap-1 px-space-md py-1.5 rounded-lg bg-error text-on-error hover:bg-error-container hover:text-on-error-container font-label-md text-label-md uppercase tracking-wide transition-colors shadow-sm"><span class="material-symbols-outlined text-[16px]">warning</span><span>Inyectar falla</span></button>
   </div>
  </div>
- <div id="d-hero" class="w-full bg-surface-container-lowest rounded-xl shadow-sm p-space-xl"></div>
- <div id="d-var"></div>
- <div id="d-stats" class="grid grid-cols-1 sm:grid-cols-3 gap-gutter"></div>
- <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-  <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
-   <h2 class="font-headline-sm text-headline-sm mb-space-md">Eventos del partido</h2>
-   <table class="w-full text-left font-body-sm text-body-sm"><thead class="bg-primary-container text-on-primary"><tr><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">Min</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase">Evento</th></tr></thead><tbody id="d-eventos" class="divide-y divide-surface-container-high"></tbody></table>
-  </div>
-  <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
-   <h2 class="font-headline-sm text-headline-sm mb-space-sm flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-secondary inline-block"></span>Se&ntilde;al SSE</h2>
-   <p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Canal <span class="font-mono">/api/eventos</span>: eventos en tiempo real.</p>
-   <div id="sse-log" class="bg-primary-container text-inverse-on-surface rounded-lg p-space-md font-mono text-[11px] flex flex-col gap-space-sm h-72 overflow-y-auto shadow-inner"></div>
+ <div class="w-full px-margin flex flex-col gap-space-lg pb-space-xl">
+  <div id="d-hero" class="w-full bg-surface-container-lowest rounded-xl shadow-sm p-space-xl flex flex-col gap-space-lg relative overflow-hidden"></div>
+  <div id="d-var"></div>
+  <div id="d-stats" class="grid grid-cols-1 sm:grid-cols-3 gap-gutter"></div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+   <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+    <h2 class="font-headline-sm text-headline-sm text-on-surface mb-space-md">Eventos del partido</h2>
+    <table class="w-full text-left font-body-sm text-body-sm"><thead><tr class="bg-primary-container text-on-primary font-label-md text-label-md uppercase"><th class="py-2 px-space-sm text-right w-20">Min</th><th class="py-2 px-space-sm">Evento</th><th class="py-2 px-space-sm">Estado</th></tr></thead><tbody id="d-eventos" class="divide-y divide-surface-container-high/40"></tbody></table>
+   </div>
+   <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg flex flex-col gap-space-sm">
+    <h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-secondary inline-block"></span>Se&ntilde;al SSE</h2>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Canal <span class="font-mono">/api/eventos</span>: eventos at&oacute;micos en tiempo real.</p>
+    <div id="sse-log" class="bg-primary-container text-inverse-on-surface rounded-lg p-space-md font-mono text-[11px] flex flex-col gap-space-sm h-72 overflow-y-auto shadow-inner"></div>
+    <div class="grid grid-cols-2 gap-space-sm"><div class="bg-surface-container-low rounded-lg p-space-sm"><div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Clientes escuchando</div><div id="d-sse" class="font-headline-sm text-headline-sm">0</div></div>
+     <div class="bg-surface-container-low rounded-lg p-space-sm"><div class="font-label-sm text-label-sm text-on-surface-variant uppercase">Reconexiones</div><div id="d-reco" class="font-headline-sm text-headline-sm text-secondary">0</div></div></div>
+   </div>
   </div>
  </div>
-</section>
+</div>
 
-<!-- ============ BITACORA ============ -->
-<section id="v-bitacora" hidden class="flex flex-col gap-space-lg">
- <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
-  <div class="flex flex-wrap items-center justify-between gap-space-md mb-space-md">
-   <h2 class="font-headline-sm text-headline-sm">Bit&aacute;cora de eventos y alertas (&uacute;ltimos 100)</h2>
-   <div class="flex items-center gap-space-sm"><label class="font-label-md text-label-md text-on-surface-variant uppercase" for="b-nivel">Nivel</label>
-    <select id="b-nivel" class="bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5 font-body-sm text-body-sm"><option value="">Todos</option><option value="ok">ok</option><option value="alerta">alerta</option><option value="falla">falla</option></select></div>
+<!-- =================== BITACORA & ALERTAS (Stitch) =================== -->
+<div id="v-bitacora" hidden class="flex flex-col w-full pt-10 lg:pt-0">
+ <div class="w-full px-margin py-space-lg flex flex-col gap-space-lg">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+   <div class="flex flex-col gap-space-xs">
+    <div class="flex items-center gap-space-sm flex-wrap">
+     <span class="inline-flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm"><span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>TELEMETR&Iacute;A EN VIVO</span>
+     <span class="font-label-sm text-label-sm text-outline">SSE CANAL: /api/eventos</span>
+    </div>
+    <h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">Bit&aacute;cora de Auditor&iacute;a en Tiempo Real y Centro de Alertas</h1>
+    <p class="font-body-sm text-body-sm text-on-surface-variant">Supervisi&oacute;n de goles, cierres de partido, anulaciones VAR, pron&oacute;sticos rechazados y fallas inyectadas con su recuperaci&oacute;n.</p>
+   </div>
+   <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-space-sm shrink-0 bg-surface-container-low p-space-sm rounded-xl">
+    <div class="flex flex-col"><label class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-0.5" for="chaos-target">Objetivo de inyecci&oacute;n</label>
+     <select id="chaos-target" class="bg-surface-container-lowest text-on-surface font-label-sm text-label-sm py-1.5 px-space-sm rounded-lg shadow-sm cursor-pointer"><option value="quiniela">Proceso de quiniela</option><option value="partido">Proceso de partido</option><option value="participante">Proceso de participante</option></select></div>
+    <button id="btn-chaos" type="button" class="mt-auto inline-flex items-center justify-center gap-1.5 px-space-md py-2 rounded-lg bg-error text-on-error font-label-sm text-label-sm hover:opacity-90 active:scale-95 transition-all shadow-sm"><span class="material-symbols-outlined text-[16px]">dangerous</span><span>Matar proceso al azar (Chaos)</span></button>
+   </div>
   </div>
-  <div class="overflow-x-auto"><table class="w-full text-left font-body-sm text-body-sm">
-   <thead class="bg-primary-container text-on-primary"><tr><th class="py-2 px-space-sm font-label-md text-label-md uppercase">Nivel</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase">Evento</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase">Detalle</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">#</th></tr></thead>
-   <tbody id="bitacora" class="divide-y divide-surface-container-high"></tbody></table></div>
+  <div id="b-estado" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md"></div>
+  <div id="b-metricas" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md"></div>
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+   <div class="lg:col-span-8 flex flex-col gap-space-md">
+    <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col sm:flex-row gap-space-sm items-center justify-between">
+     <div class="relative w-full sm:w-72"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+      <input id="audit-search" type="text" placeholder="Buscar por tipo, ID o detalle..." class="w-full pl-9 pr-space-md py-1.5 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none placeholder:text-outline"></div>
+     <div id="sev-btns" class="flex flex-wrap items-center gap-space-xs w-full sm:w-auto justify-end"></div>
+    </div>
+    <div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+     <div class="flex items-center justify-between pb-space-sm">
+      <div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[20px]">reorder</span><h2 class="font-headline-sm text-headline-sm text-on-surface">Timeline de Auditor&iacute;a Operativa</h2></div>
+      <div class="flex items-center gap-space-sm"><span id="pausa-txt" class="font-label-sm text-label-sm text-outline">TIEMPO REAL</span>
+       <button id="btn-pause-feed" type="button" class="text-on-surface-variant hover:text-on-surface p-1 rounded hover:bg-surface-container"><span id="pausa-ico" class="material-symbols-outlined text-[16px]">pause_circle</span></button></div>
+     </div>
+     <div id="timeline" class="flex flex-col gap-space-sm"></div>
+    </div>
+   </div>
+   <div class="lg:col-span-4 flex flex-col gap-space-md">
+    <div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+     <div class="flex items-center justify-between"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[20px]">memory</span><h2 class="font-headline-sm text-headline-sm text-on-surface">Procesos OTP</h2></div>
+      <span id="proc-vivos" class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-bold"></span></div>
+     <p class="font-body-sm text-body-sm text-on-surface-variant">Procesos supervisados con inyecci&oacute;n forzada de fallas (<span class="font-mono">exit(Pid, kill)</span>) y recuperaci&oacute;n autom&aacute;tica.</p>
+     <div id="procesos" class="flex flex-col gap-space-sm"></div>
+    </div>
+    <div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-sm">
+     <span class="font-label-sm text-label-sm text-on-surface-variant uppercase font-bold">Recuperaciones recientes (ms)</span>
+     <div id="recup" class="flex flex-col gap-1 font-mono text-[11px]"></div>
+    </div>
+    <div class="bg-surface-container-low p-space-md rounded-xl flex items-start gap-space-sm"><span class="material-symbols-outlined text-secondary text-[20px]">lock</span>
+     <div><div class="font-label-lg text-label-lg text-on-surface">Pol&iacute;tica de cierre</div><p class="font-body-sm text-body-sm text-on-surface-variant">Una vez que el partido inicia (reloj del servidor) ning&uacute;n pron&oacute;stico se acepta, aun con relojes desfasados o reintentos del cliente.</p></div></div>
+   </div>
+  </div>
  </div>
-</section>
-
 </div>
 </main>
 <footer class="w-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wide px-margin py-space-sm flex flex-wrap justify-between gap-space-sm">
- <span>Sincronizaci&oacute;n operativa activa</span><span>FIFA World Cup 2026 &middot; Quiniela OTP</span>
+ <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-secondary inline-block"></span>Sincronizaci&oacute;n operativa activa</span><span>FIFA World Cup 2026 &middot; Quiniela OTP</span>
 </footer>
 <script src="/app.js"></script>
 </body>

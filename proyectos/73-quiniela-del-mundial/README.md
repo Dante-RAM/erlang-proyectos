@@ -77,6 +77,6 @@ Abrir el puerto 8080 en el Security Group de la instancia.
 ## Entregables y pendientes
 
 - [x] Dominio OTP, API, SSE, metricas, simulacion, caos, pruebas
-- [x] UI con diseño de Google Stitch (`design/stitch/`: `code.html`, `screen.png`, `DESIGN.md`; prompt en `design/PROMPT_STITCH.md`), integrada al backend en `priv/web` — capturas en `docs/capturas/`. Stitch generó la pantalla *Detalle de partido*; el Dashboard y la Bitácora siguen su sistema de diseño (`DESIGN.md`). El CSS se compila con Tailwind desde `design/stitch/tailwind.config.js` a `priv/web/tailwind.css` (sin CDN).
+- [x] UI de Google Stitch (3 pantallas: Dashboard Principal, Detalle de Partido, Bitácora & Alertas) integrada al backend en `priv/web`. Exports originales en `design/stitch/` (`*.html`, `*.png`, `DESIGN.md`); prompt en `design/PROMPT_STITCH.md`. Se conservó el marcado y estilo de Stitch; los datos de ejemplo de los diseños (nombres, pods de Kubernetes, etc.) se reemplazaron por datos reales del backend. Tailwind se compila a `priv/web/tailwind.css` con `design/stitch/tailwind.config.js` y las fuentes (Arimo/Arial, Material Symbols) van locales en `priv/web/fonts/` (sin CDN). Capturas en `docs/capturas/`.
 - [ ] Grabar el asciinema en la VM de AWS y publicar el Gist del manual (`docs/MANUAL_USUARIO.md`)
 - [ ] Probar en OTP 27 en la VM
