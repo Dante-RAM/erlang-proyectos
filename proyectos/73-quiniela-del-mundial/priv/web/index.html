@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiniela del Mundial 2026</title>
+<link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+<header>
+  <div><h1>Quiniela del Mundial 2026</h1><small id="reloj">reloj: —</small></div>
+  <span id="semaforo" class="ok" role="status">Conectando…</span>
+</header>
+<nav role="tablist">
+  <button role="tab" aria-selected="true" data-vista="dashboard">Dashboard</button>
+  <button role="tab" aria-selected="false" data-vista="detalle">Detalle de partido</button>
+  <button role="tab" aria-selected="false" data-vista="bitacora">Bitácora y alertas</button>
+</nav>
+<main>
+<section id="v-dashboard">
+  <div class="rejilla" id="resumen"></div>
+  <div class="dos">
+    <div class="tarjeta">
+      <h2>Ranking en vivo</h2>
+      <div class="fila">
+        <div><label for="sel-quiniela">Quiniela</label><select id="sel-quiniela"></select></div>
+        <div><label for="buscar">Buscar participante</label><input id="buscar" placeholder="U0042"></div>
+      </div>
+      <div id="reglas" class="nota"></div>
+      <table><thead><tr><th class="n">#</th><th>Participante</th><th class="n">Pts</th><th class="n">Exactos</th><th class="n">Ganador</th></tr></thead><tbody id="ranking"></tbody></table>
+      <div id="buscado" class="msg" hidden></div>
+    </div>
+    <div class="tarjeta">
+      <h2>Partidos</h2>
+      <div class="fila"><div><label for="filtro-estado">Mostrar</label>
+        <select id="filtro-estado"><option value="en_vivo">En vivo</option><option value="">Todos</option><option value="finalizado">Finalizados</option><option value="programado">Programados</option></select></div></div>
+      <div id="partidos"></div>
+    </div>
+  </div>
+  <div class="dos" style="margin-top:16px">
+    <div class="tarjeta">
+      <h2>Simulación del escenario</h2>
+      <div class="fila">
+        <div><label for="s-part">Participantes</label><input id="s-part" type="number" value="5000" min="1" max="20000"></div>
+        <div><label for="s-quin">Quinielas</label><input id="s-quin" type="number" value="50" min="1" max="200"></div>
+        <div><label for="s-pts">Partidos</label><input id="s-pts" type="number" value="104" min="1" max="104"></div>
+      </div>
+      <label><input type="checkbox" id="s-caos" checked> Inyectar fallas durante los partidos</label>
+      <label for="token">Token admin</label><input id="token" type="password" value="demo-token" autocomplete="off">
+      <button class="accion" id="b-sim">Iniciar simulación</button>
+      <div class="barra"><div id="progreso"></div></div>
+      <div id="sim-estado" class="nota">Sin simulación en curso.</div>
+      <pre id="sim-reporte" hidden></pre>
+    </div>
+    <div class="tarjeta">
+      <h2>Pronosticar (API pública)</h2>
+      <div class="fila">
+        <div><label for="p-part">Participante</label><input id="p-part" value="U0001" size="8"></div>
+        <div><label for="p-partido">Partido #</label><input id="p-partido" type="number" value="1" min="1" max="104"></div>
+        <div><label for="p-l">Local</label><input id="p-l" type="number" value="1" min="0" max="30"></div>
+        <div><label for="p-v">Visitante</label><input id="p-v" type="number" value="0" min="0" max="30"></div>
+      </div>
+      <button class="accion" id="b-pron">Enviar pronóstico</button>
+      <div id="pron-res" class="msg" hidden></div>
+      <p class="nota">El cierre lo decide el reloj del servidor, nunca la hora del navegador.</p>
+      <h2 style="margin-top:18px">Inyectar falla (matar un proceso)</h2>
+      <div class="fila">
+        <div><label for="f-obj">Objetivo</label><select id="f-obj"><option value="quiniela">Una quiniela</option><option value="partido">Un partido</option><option value="participante">Un participante</option></select></div>
+      </div>
+      <button class="accion peligro" id="b-falla">Matar proceso al azar</button>
+      <div id="falla-res" class="msg" hidden></div>
+    </div>
+  </div>
+</section>
+
+<section id="v-detalle" hidden>
+  <div class="dos">
+    <div class="tarjeta"><h2>Elegir partido</h2>
+      <label for="d-sel">Partido</label><select id="d-sel"></select>
+      <div id="d-lista"></div></div>
+    <div class="tarjeta"><h2>Detalle</h2><div id="d-info" class="nota">Elige un partido.</div></div>
+  </div>
+</section>
+
+<section id="v-bitacora" hidden>
+  <div class="tarjeta"><h2>Bitácora de eventos (últimos 100)</h2>
+    <table><thead><tr><th>Nivel</th><th>Evento</th><th>Detalle</th><th class="n">#</th></tr></thead><tbody id="bitacora"></tbody></table></div>
+</section>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
