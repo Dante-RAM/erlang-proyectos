@@ -72,11 +72,33 @@ scripts/aws_setup.sh        # en una instancia Ubuntu: instala OTP 27 + rebar3 y
 scripts/demo.sh             # simulacion + caos + prueba de cierre
 asciinema rec demo.cast -c scripts/demo.sh
 ```
-Abrir el puerto 8080 en el Security Group de la instancia.
+Abrir el puerto 8080 en el Security Group de la instancia. En la instancia de AWS Academy (≈1 GB de RAM) crear 2 GB de swap o simular con 2,000 participantes: con 5,000 el kernel mata el nodo por falta de memoria.
+
+### Ubuntu en VirtualBox (alternativa local)
+
+Probado en Ubuntu 24.04 (OTP 25, rebar3 3.19, 4 GB RAM): 71 pruebas en verde.
+
+```bash
+sudo apt install -y erlang-nox erlang-dev erlang-eunit rebar3 git curl asciinema
+git clone -b proyecto-73-quiniela https://github.com/Dante-RAM/erlang-proyectos.git
+cd erlang-proyectos/proyectos/73-quiniela-del-mundial && rebar3 eunit && rebar3 compile
+# Nodo en segundo plano (rebar3 shell sin terminal se cierra al leer EOF):
+nohup setsid erl -noshell -config config/sys.config -pa _build/default/lib/*/ebin \
+  -eval '{ok,_}=application:ensure_all_started(p73_quiniela_del_mundial)' > /tmp/nodo.log 2>&1 < /dev/null &
+```
+Si el puerto 8080 está ocupado (p. ej. Apache), cambiar `{port, 8080}` en `config/sys.config`.
+
+### Uso de la UI
+
+1. Panel de Simulación: participantes 5000, quinielas 50, partidos 64 (enunciado) o 104 (Mundial 2026 completo), velocidad **Demo** (pausa de 4 s por ventana para pronosticar en vivo) o **Máxima** (prueba de carga). Token `demo-token`.
+2. Ingresar Pronóstico Rápido: se aceptan solo partidos `programado` (cierre por reloj del servidor); los tardíos dan 409.
+3. Mis pronósticos: lista del participante con resultado real y acierto (exacto/ganador/falló).
+4. Al terminar quedan 6 partidos abiertos (#1001–#1006) para seguir pronosticando.
 
 ## Entregables y pendientes
 
 - [x] Dominio OTP, API, SSE, metricas, simulacion, caos, pruebas
 - [x] UI de Google Stitch (3 pantallas: Dashboard Principal, Detalle de Partido, Bitácora & Alertas) integrada al backend en `priv/web`. Exports originales en `design/stitch/` (`*.html`, `*.png`, `DESIGN.md`); prompt en `design/PROMPT_STITCH.md`. Se conservó el marcado y estilo de Stitch; los datos de ejemplo de los diseños (nombres, pods de Kubernetes, etc.) se reemplazaron por datos reales del backend. Tailwind se compila a `priv/web/tailwind.css` con `design/stitch/tailwind.config.js` y las fuentes (Arimo/Arial, Material Symbols) van locales en `priv/web/fonts/` (sin CDN). Capturas en `docs/capturas/`.
 - [ ] Grabar el asciinema en la VM de AWS y publicar el Gist del manual (`docs/MANUAL_USUARIO.md`)
-- [ ] Probar en OTP 27 en la VM
+- [x] Probar en OTP 27 (VM AWS) y OTP 25 (Ubuntu 24.04 en VirtualBox): 71 pruebas en verde
+- [x] Modo demo (pausa por ventana), partidos abiertos tras la simulación, panel "Mis pronósticos"
