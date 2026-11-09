@@ -15,7 +15,7 @@ El servidor decide el cierre de predicciones con su propio reloj; el reloj del c
 
 ```bash
 rebar3 compile
-rebar3 eunit          # 71 pruebas
+rebar3 eunit          # 73 pruebas
 rebar3 shell          # http://localhost:8080
 ```
 
@@ -33,7 +33,7 @@ p73_quiniela_del_mundial_sup  (rest_for_one)
 ├─ p73_participantes_sup   simple_one_for_one -> p73_participante
 ├─ p73_poblacion           crea participantes/quinielas
 ├─ p73_simulador           gen_server del escenario de carga
-└─ p73_server              cowboy (API REST, SSE, /metrics, UI estatica)
+└─ p73_server              cowboy (API REST, SSE, WebSocket, /metrics, /api/diagnostico, UI estatica)
 ```
 
 - **Quien reinicia a quien:** `rest_for_one` — si cae `p73_almacen` se reinician todos los hijos posteriores; los procesos de partido/quiniela/participante se reinician individualmente y reconstruyen su estado desde ETS.
@@ -41,7 +41,7 @@ p73_quiniela_del_mundial_sup  (rest_for_one)
 - **Puntos:** exacto 3, diferencia de goles 0 (regla simplificada), ganador/empate 1, bono campeon 5. Se recalcula de forma incremental por partido con deltas en cada quiniela; `verificar/1` recalcula desde cero y un oraculo independiente lo contrasta.
 - **Ranking:** puntos, exactos, ganadores; los empates comparten posicion.
 - **VAR:** un gol anulado revierte el marcador y recalcula los puntos del partido.
-- **Difusion:** SSE con limitacion de 200 ms y `max_heap_size` por conexion.
+- **Difusion:** SSE (`/api/eventos`, solo servidor→cliente) y WebSocket (`/ws`, bidireccional: recibe los mismos eventos y acepta pronosticos por el socket). Ambos con limitacion de 200 ms y `max_heap_size` por conexion; `pg` los saca del grupo al desconectarse.
 
 ## Supuestos
 
@@ -62,7 +62,7 @@ p73_quiniela_del_mundial_sup  (rest_for_one)
 
 ## Endpoints
 
-`GET /api/estado` · `/api/partidos` · `/api/partidos/:id` · `/api/quinielas` · `/api/ranking?quiniela=` · `/api/participantes/:id` · `/api/bitacora` · `/api/simulacion` · `/api/eventos` (SSE) · `/metrics` (Prometheus)  
+`GET /api/estado` · `/api/partidos` · `/api/partidos/:id` · `/api/quinielas` · `/api/ranking?quiniela=` · `/api/participantes/:id` · `/api/bitacora` · `/api/simulacion` · `/api/eventos` (SSE) · `/ws` (WebSocket) · `/metrics` (Prometheus) · `/api/diagnostico` (recon)  
 `POST /api/predicciones` · `/api/simulacion` · `/api/falla` · `/api/admin/evento` · `/api/admin/reloj` (los de admin requieren `x-admin-token`).
 
 ## Demo (AWS + asciinema)
@@ -76,7 +76,7 @@ Abrir el puerto 8080 en el Security Group de la instancia. En la instancia de AW
 
 ### Ubuntu en VirtualBox (alternativa local)
 
-Probado en Ubuntu 24.04 (OTP 25, rebar3 3.19, 4 GB RAM): 71 pruebas en verde.
+Probado en Ubuntu 24.04 (OTP 25, rebar3 3.19, 4 GB RAM): 73 pruebas en verde.
 
 ```bash
 sudo apt install -y erlang-nox erlang-dev erlang-eunit rebar3 git curl asciinema
@@ -95,10 +95,42 @@ Si el puerto 8080 está ocupado (p. ej. Apache), cambiar `{port, 8080}` en `conf
 3. Mis pronósticos: lista del participante con resultado real y acierto (exacto/ganador/falló).
 4. Al terminar quedan 6 partidos abiertos (#1001–#1006) para seguir pronosticando.
 
+## Release + systemd
+
+```bash
+rebar3 release                          # relx: _build/default/rel/p73_quiniela_del_mundial
+sudo scripts/instalar_servicio.sh       # copia a /opt/p73, usuario p73, habilita deploy/p73-quiniela.service
+systemctl status p73-quiniela           # journalctl -u p73-quiniela -f para el log
+```
+Dos niveles de recuperacion: los supervisores OTP reinician procesos dentro del nodo y systemd (`Restart=on-failure`) reinicia la VM de Erlang si cae completa. Cambiar la cookie de `config/vm.args` antes de desplegar.
+
+## WebSocket (`/ws?quiniela=Q01`)
+
+```
+<- {"tipo":"hola","canal":"websocket",...}           al conectar
+-> {"tipo":"ping"}                                   <- {"tipo":"pong","reloj":...}
+-> {"tipo":"pronostico","participante":"U0001","partido":1001,"local":2,"visitante":1}
+<- {"tipo":"pronostico_resultado","ok":true,...}     (o "ok":false,"error":"cerrado" si ya inicio)
+<- eventos en vivo: gol, var, estado, ranking de la quiniela elegida
+```
+
+## Diagnostico con recon (`GET /api/diagnostico`)
+
+Top 5 procesos por memoria, cola de mensajes y reducciones (`recon:proc_count/2`), memoria del asignador (`recon_alloc`) y conteos del nodo. Desde una consola remota tambien: `bin/p73_quiniela_del_mundial remote_console` y `recon:proc_count(message_queue_len, 5).`
+
+## Pendiente (checklist del enunciado)
+
+- [x] Disenar pantallas en Stitch (`design/PROMPT_STITCH.md`, exports en `design/stitch/`, integradas en `priv/web`)
+- [x] Modelar el dominio: que es un proceso, que es un supervisor (seccion *Diseno OTP*)
+- [x] Endpoints `/api/...` y WebSocket con cowboy (`p73_h_api`, `p73_h_sse`, `p73_h_ws`)
+- [x] Metricas `/metrics` y diagnostico con recon (`p73_h_metrics`, `p73_h_diag`)
+- [x] Release + systemd (`rebar.config` relx, `deploy/p73-quiniela.service`, `scripts/instalar_servicio.sh`)
+- [x] Prueba de caos (matar procesos y verificar recuperacion): `p73_caos`, boton *Matar proceso al azar*, fallas durante la simulacion, pruebas en `test/`
+
 ## Entregables y pendientes
 
 - [x] Dominio OTP, API, SSE, metricas, simulacion, caos, pruebas
 - [x] UI de Google Stitch (3 pantallas: Dashboard Principal, Detalle de Partido, Bitácora & Alertas) integrada al backend en `priv/web`. Exports originales en `design/stitch/` (`*.html`, `*.png`, `DESIGN.md`); prompt en `design/PROMPT_STITCH.md`. Se conservó el marcado y estilo de Stitch; los datos de ejemplo de los diseños (nombres, pods de Kubernetes, etc.) se reemplazaron por datos reales del backend. Tailwind se compila a `priv/web/tailwind.css` con `design/stitch/tailwind.config.js` y las fuentes (Arimo/Arial, Material Symbols) van locales en `priv/web/fonts/` (sin CDN). Capturas en `docs/capturas/`.
 - [ ] Grabar el asciinema en la VM de AWS y publicar el Gist del manual (`docs/MANUAL_USUARIO.md`)
-- [x] Probar en OTP 27 (VM AWS) y OTP 25 (Ubuntu 24.04 en VirtualBox): 71 pruebas en verde
+- [x] Probar en OTP 27 (VM AWS) y OTP 25 (Ubuntu 24.04 en VirtualBox): 73 pruebas en verde
 - [x] Modo demo (pausa por ventana), partidos abiertos tras la simulación, panel "Mis pronósticos"

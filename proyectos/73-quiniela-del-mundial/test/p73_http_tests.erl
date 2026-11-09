@@ -10,7 +10,9 @@ http_test_() ->
         {"operaciones administrativas exigen token", fun admin/0},
         {"ranking, partidos, quinielas y bitacora devuelven JSON", fun lecturas/0},
         {"/metrics expone contadores en formato Prometheus", fun metricas/0},
-        {"SSE: hola + eventos de partido en vivo", fun() -> sse(I) end}]
+        {"SSE: hola + eventos de partido en vivo", fun() -> sse(I) end},
+        {"WebSocket: hola, ping/pong, pronostico por el socket y eventos en vivo", fun ws/0},
+        {"/api/diagnostico (recon): top de procesos y memoria", fun diagnostico/0}]
    end}.
 
 arrancar() ->
@@ -133,3 +135,63 @@ leer_hasta(S, Buscado, Acc) ->
       leer_hasta(S, Buscado, <<Acc/binary, Datos/binary>>);
     _ -> Acc
   end.
+
+%% ---- WebSocket (/ws) con un cliente minimo sobre gen_tcp (RFC 6455) ----
+ws() ->
+  {ok, S} = gen_tcp:connect({127, 0, 0, 1}, p73_http:puerto(), [binary, {active, false}]),
+  ok = gen_tcp:send(S, <<"GET /ws?quiniela=Q1 HTTP/1.1\r\nHost: x\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n"
+                         "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\nSec-WebSocket-Version: 13\r\n\r\n">>),
+  {Cab, Resto} = leer_cabecera(S, <<>>),
+  ?assertNotEqual(nomatch, binary:match(Cab, <<"101">>)),
+  {Hola, R1} = leer_trama(S, Resto),
+  ?assertMatch(#{<<"tipo">> := <<"hola">>, <<"canal">> := <<"websocket">>}, decodificar(Hola)),
+  ok = enviar_trama(S, <<"{\"tipo\":\"ping\"}">>),
+  {Pong, R2} = leer_trama(S, R1),
+  ?assertMatch(#{<<"tipo">> := <<"pong">>}, decodificar(Pong)),
+  %% Pronostico por el socket: el partido 104 sigue abierto (reloj del servidor antes de su inicio).
+  ok = enviar_trama(S, <<"{\"tipo\":\"pronostico\",\"participante\":\"U3\",\"partido\":104,\"local\":1,\"visitante\":1}">>),
+  {Ok, R3} = leer_hasta_tipo(S, R2, <<"pronostico_resultado">>),
+  ?assertMatch(#{<<"ok">> := true, <<"partido">> := 104}, Ok),
+  %% El partido 1 ya cerro: el socket tambien lo rechaza.
+  ok = enviar_trama(S, <<"{\"tipo\":\"pronostico\",\"participante\":\"U3\",\"partido\":1,\"local\":1,\"visitante\":1}">>),
+  {Rech, R4} = leer_hasta_tipo(S, R3, <<"pronostico_resultado">>),
+  ?assertMatch(#{<<"ok">> := false, <<"error">> := <<"cerrado">>}, Rech),
+  ok = enviar_trama(S, <<"no es json">>),
+  {Err, _} = leer_hasta_tipo(S, R4, <<"error">>),
+  ?assertMatch(#{<<"error">> := <<"json_invalido">>}, Err),
+  gen_tcp:close(S),
+  ?assertEqual(ok, p73_test_util:esperar(fun() -> p73_reg:miembros(eventos) =:= [] end, 100)).
+
+diagnostico() ->
+  {200, _, Cuerpo} = consultar("/api/diagnostico"),
+  D = decodificar(Cuerpo),
+  ?assertMatch(#{<<"procesos">> := N, <<"memoria_mb">> := #{<<"total">> := _}} when N > 0, D),
+  ?assertEqual(5, length(maps:get(<<"top_memoria">>, D))),
+  ?assertMatch([#{<<"pid">> := _, <<"valor">> := _, <<"proceso">> := _} | _], maps:get(<<"top_cola_mensajes">>, D)).
+
+leer_cabecera(S, Acc) ->
+  case binary:split(Acc, <<"\r\n\r\n">>) of
+    [C, Resto] -> {C, Resto};
+    _ -> {ok, D} = gen_tcp:recv(S, 0, 5000), leer_cabecera(S, <<Acc/binary, D/binary>>)
+  end.
+
+%% Trama de texto del servidor (sin mascara).
+leer_trama(S, <<_:4, 1:4, 0:1, 126:7, Len:16, Datos:Len/binary, Resto/binary>>) -> _ = S, {Datos, Resto};
+leer_trama(S, <<_:4, 1:4, 0:1, Len:7, Datos:Len/binary, Resto/binary>>) when Len < 126 -> _ = S, {Datos, Resto};
+leer_trama(S, Acc) -> {ok, D} = gen_tcp:recv(S, 0, 5000), leer_trama(S, <<Acc/binary, D/binary>>).
+
+%% Salta eventos de partido intercalados hasta el mensaje del tipo buscado.
+leer_hasta_tipo(S, Acc, Tipo) ->
+  {T, Resto} = leer_trama(S, Acc),
+  case decodificar(T) of
+    #{<<"tipo">> := Tipo} = M -> {M, Resto};
+    _ -> leer_hasta_tipo(S, Resto, Tipo)
+  end.
+
+%% Trama de texto del cliente (con mascara, obligatoria por RFC 6455).
+enviar_trama(S, Datos) ->
+  Mascara = crypto:strong_rand_bytes(4),
+  gen_tcp:send(S, [<<1:1, 0:3, 1:4, 1:1, (byte_size(Datos)):7>>, Mascara, enmascarar(Datos, Mascara)]).
+
+enmascarar(Datos, <<M:32>>) ->
+  << <<(B bxor ((M bsr (8 * (3 - (I rem 4)))) band 255))>> || {I, B} <- lists:zip(lists:seq(0, byte_size(Datos) - 1), binary_to_list(Datos)) >>.

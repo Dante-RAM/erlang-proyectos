@@ -1,0 +1,27 @@
+# Servicio systemd del release OTP de la Quiniela del Mundial.
+# Instalar con scripts/instalar_servicio.sh (copia el release a /opt/p73 y habilita el servicio).
+[Unit]
+Description=Quiniela del Mundial 2026 (Erlang/OTP, proyecto 73)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=p73
+Group=p73
+WorkingDirectory=/opt/p73
+Environment=HOME=/opt/p73
+# foreground: systemd vigila el proceso de la VM; si la VM entera cae, systemd la levanta.
+# Dentro de la VM, los supervisores OTP reinician procesos sueltos (dos niveles de recuperacion).
+ExecStart=/opt/p73/bin/p73_quiniela_del_mundial foreground
+ExecStop=/opt/p73/bin/p73_quiniela_del_mundial stop
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65536
+# Endurecimiento basico
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

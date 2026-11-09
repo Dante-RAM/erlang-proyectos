@@ -34,6 +34,8 @@ dispatch() ->
     {"/api/admin/evento", p73_h_api, evento},
     {"/api/admin/reloj", p73_h_api, reloj},
     {"/api/eventos", p73_h_sse, []},
+    {"/ws", p73_h_ws, []},
+    {"/api/diagnostico", p73_h_diag, []},
     {"/metrics", p73_h_metrics, []},
     {"/", cowboy_static, {priv_file, ?APP, "web/index.html"}},
     {"/[...]", cowboy_static, {priv_dir, ?APP, "web"}}
