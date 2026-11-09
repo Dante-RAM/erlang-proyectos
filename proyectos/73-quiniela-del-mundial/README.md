@@ -67,6 +67,8 @@ p73_quiniela_del_mundial_sup  (rest_for_one)
 
 ## Demo (AWS + asciinema)
 
+**Grabacion (Ubuntu 24.04 en VirtualBox, OTP 25):** https://asciinema.org/a/ut3NBk3pOZ45Go1A — pruebas, escenario del enunciado (5000/50/64), rafaga, VAR, recalculo verificado, caos, HTTP 200/409, WebSocket y recon (`scripts/demo.sh`).
+
 ```bash
 scripts/aws_setup.sh        # en una instancia Ubuntu: instala OTP 27 + rebar3 y compila
 scripts/demo.sh             # simulacion + caos + prueba de cierre
@@ -131,6 +133,7 @@ Top 5 procesos por memoria, cola de mensajes y reducciones (`recon:proc_count/2`
 
 - [x] Dominio OTP, API, SSE, metricas, simulacion, caos, pruebas
 - [x] UI de Google Stitch (3 pantallas: Dashboard Principal, Detalle de Partido, Bitácora & Alertas) integrada al backend en `priv/web`. Exports originales en `design/stitch/` (`*.html`, `*.png`, `DESIGN.md`); prompt en `design/PROMPT_STITCH.md`. Se conservó el marcado y estilo de Stitch; los datos de ejemplo de los diseños (nombres, pods de Kubernetes, etc.) se reemplazaron por datos reales del backend. Tailwind se compila a `priv/web/tailwind.css` con `design/stitch/tailwind.config.js` y las fuentes (Arimo/Arial, Material Symbols) van locales en `priv/web/fonts/` (sin CDN). Capturas en `docs/capturas/`.
-- [ ] Grabar el asciinema en la VM de AWS y publicar el Gist del manual (`docs/MANUAL_USUARIO.md`)
+- [x] Grabar el asciinema: https://asciinema.org/a/ut3NBk3pOZ45Go1A
+- [ ] Publicar el Gist del manual (`docs/MANUAL_USUARIO.md`)
 - [x] Probar en OTP 27 (VM AWS) y OTP 25 (Ubuntu 24.04 en VirtualBox): 73 pruebas en verde
 - [x] Modo demo (pausa por ventana), partidos abiertos tras la simulación, panel "Mis pronósticos"
