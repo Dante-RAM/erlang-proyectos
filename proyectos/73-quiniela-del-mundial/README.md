@@ -1,6 +1,6 @@
 # #73 — Quiniela del Mundial 2026
 
-**Dominio:** Entretenimiento y juegos · Erlang/OTP · cowboy · SSE · UI en `priv/web` (Arial)
+**Dominio:** Entretenimiento y juegos · Erlang/OTP · cowboy · SSE · UI diseñada en Google Stitch (`design/stitch/`) e integrada en `priv/web`
 
 Quiniela del Mundial FIFA 2026 (48 equipos, 104 partidos) con predicciones, puntos y ranking en vivo.
 El servidor decide el cierre de predicciones con su propio reloj; el reloj del cliente se ignora.
@@ -77,7 +77,6 @@ Abrir el puerto 8080 en el Security Group de la instancia.
 ## Entregables y pendientes
 
 - [x] Dominio OTP, API, SSE, metricas, simulacion, caos, pruebas
-- [x] UI funcional (`priv/web`) — capturas en `docs/capturas/`
-- [ ] Pantallas en Google Stitch (`design/PROMPT_STITCH.md`) — generarlas y guardar el export en `design/`
+- [x] UI con diseño de Google Stitch (`design/stitch/`: `code.html`, `screen.png`, `DESIGN.md`; prompt en `design/PROMPT_STITCH.md`), integrada al backend en `priv/web` — capturas en `docs/capturas/`. Stitch generó la pantalla *Detalle de partido*; el Dashboard y la Bitácora siguen su sistema de diseño (`DESIGN.md`). El CSS se compila con Tailwind desde `design/stitch/tailwind.config.js` a `priv/web/tailwind.css` (sin CDN).
 - [ ] Grabar el asciinema en la VM de AWS y publicar el Gist del manual (`docs/MANUAL_USUARIO.md`)
 - [ ] Probar en OTP 27 en la VM

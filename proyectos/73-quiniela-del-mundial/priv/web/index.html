@@ -1,92 +1,156 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="h-full">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quiniela del Mundial 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Arimo:wght@100..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/estilo.css">
+<link rel="stylesheet" href="/tailwind.css">
 </head>
-<body>
-<header>
-  <div><h1>Quiniela del Mundial 2026</h1><small id="reloj">reloj: —</small></div>
-  <span id="semaforo" class="ok" role="status">Conectando…</span>
+<body class="min-h-full bg-background text-on-surface antialiased">
+<header class="fixed top-0 left-0 right-0 z-50 bg-primary-container shadow-[0_1px_8px_rgba(0,0,0,0.2)]">
+ <div class="min-h-16 w-full px-margin-mobile md:px-margin flex flex-wrap items-center justify-between gap-space-md py-2">
+  <div class="flex items-center gap-space-md shrink-0">
+   <div class="h-9 w-9 rounded-lg bg-surface-container-highest/20 flex items-center justify-center text-xl" aria-hidden="true">&#9917;</div>
+   <div class="flex flex-col">
+    <div class="flex items-center gap-space-sm">
+     <h1 class="font-headline-sm text-headline-sm text-on-primary tracking-tight font-bold">Quiniela Mundial 2026</h1>
+     <span id="semaforo" role="status" class="inline-flex items-center px-1.5 rounded font-label-sm text-label-sm font-bold bg-secondary-container text-on-secondary-fixed">CONECTANDO</span>
+    </div>
+    <div class="flex items-center gap-1.5">
+     <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-fixed opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-secondary-fixed"></span></span>
+     <span class="font-label-sm text-label-sm text-on-primary-container font-medium">SSE <span id="sse-n">0</span> en l&iacute;nea</span>
+     <span id="reloj" class="font-label-sm text-label-sm text-on-primary-container ml-2">reloj: &mdash;</span>
+    </div>
+   </div>
+  </div>
+  <nav role="tablist" class="flex items-center gap-space-xs order-3 w-full lg:order-none lg:w-auto overflow-x-auto">
+   <button role="tab" aria-selected="true" data-vista="dashboard" class="tab px-space-md py-space-sm rounded-lg font-label-lg text-label-lg uppercase tracking-wide transition-colors whitespace-nowrap">Dashboard</button>
+   <button role="tab" aria-selected="false" data-vista="detalle" class="tab px-space-md py-space-sm rounded-lg font-label-lg text-label-lg uppercase tracking-wide transition-colors whitespace-nowrap">Detalle de partido</button>
+   <button role="tab" aria-selected="false" data-vista="bitacora" class="tab px-space-md py-space-sm rounded-lg font-label-lg text-label-lg uppercase tracking-wide transition-colors whitespace-nowrap">Bit&aacute;cora y alertas</button>
+  </nav>
+  <div class="flex items-center gap-space-md shrink-0">
+   <div class="flex items-center bg-surface-container-highest/10 rounded-lg p-0.5 border border-outline-variant/20">
+    <label class="sr-only" for="sel-quiniela">Quiniela activa</label>
+    <select id="sel-quiniela" class="bg-transparent text-inverse-on-surface font-body-sm text-body-sm px-space-sm py-1 focus:outline-none cursor-pointer max-w-[200px]"></select>
+   </div>
+   <button id="b-falla-h" type="button" class="inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-error text-on-error font-label-sm text-label-sm uppercase font-bold transition-all active:scale-95"><span class="hidden md:inline">Matar proceso</span></button>
+  </div>
+ </div>
 </header>
-<nav role="tablist">
-  <button role="tab" aria-selected="true" data-vista="dashboard">Dashboard</button>
-  <button role="tab" aria-selected="false" data-vista="detalle">Detalle de partido</button>
-  <button role="tab" aria-selected="false" data-vista="bitacora">Bitácora y alertas</button>
-</nav>
-<main>
-<section id="v-dashboard">
-  <div class="rejilla" id="resumen"></div>
-  <div class="dos">
-    <div class="tarjeta">
-      <h2>Ranking en vivo</h2>
-      <div class="fila">
-        <div><label for="sel-quiniela">Quiniela</label><select id="sel-quiniela"></select></div>
-        <div><label for="buscar">Buscar participante</label><input id="buscar" placeholder="U0042"></div>
-      </div>
-      <div id="reglas" class="nota"></div>
-      <table><thead><tr><th class="n">#</th><th>Participante</th><th class="n">Pts</th><th class="n">Exactos</th><th class="n">Ganador</th></tr></thead><tbody id="ranking"></tbody></table>
-      <div id="buscado" class="msg" hidden></div>
-    </div>
-    <div class="tarjeta">
-      <h2>Partidos</h2>
-      <div class="fila"><div><label for="filtro-estado">Mostrar</label>
-        <select id="filtro-estado"><option value="en_vivo">En vivo</option><option value="">Todos</option><option value="finalizado">Finalizados</option><option value="programado">Programados</option></select></div></div>
-      <div id="partidos"></div>
-    </div>
+
+<main class="w-full pt-28 lg:pt-20 pb-space-xl">
+<div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin">
+
+<!-- ============ DASHBOARD ============ -->
+<section id="v-dashboard" class="flex flex-col gap-space-lg">
+ <div id="resumen" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-gutter"></div>
+ <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+  <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+   <h2 class="font-headline-sm text-headline-sm mb-space-md">Ranking en vivo</h2>
+   <div class="flex flex-wrap gap-space-md items-end mb-space-sm">
+    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="buscar">Buscar participante</label>
+     <input id="buscar" placeholder="U0042" class="mt-1 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5 font-body-md text-body-md"></div>
+   </div>
+   <div id="buscado" hidden class="rounded px-space-md py-space-sm mb-space-sm font-body-md text-body-md"></div>
+   <div id="reglas" class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm"></div>
+   <div class="overflow-x-auto">
+   <table class="w-full text-left font-body-sm text-body-sm">
+    <thead class="bg-primary-container text-on-primary"><tr><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">#</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase">Participante</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">Pts</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">Exactos</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">Ganador</th></tr></thead>
+    <tbody id="ranking" class="divide-y divide-surface-container-high"></tbody>
+   </table></div>
   </div>
-  <div class="dos" style="margin-top:16px">
-    <div class="tarjeta">
-      <h2>Simulación del escenario</h2>
-      <div class="fila">
-        <div><label for="s-part">Participantes</label><input id="s-part" type="number" value="5000" min="1" max="20000"></div>
-        <div><label for="s-quin">Quinielas</label><input id="s-quin" type="number" value="50" min="1" max="200"></div>
-        <div><label for="s-pts">Partidos</label><input id="s-pts" type="number" value="104" min="1" max="104"></div>
-      </div>
-      <label><input type="checkbox" id="s-caos" checked> Inyectar fallas durante los partidos</label>
-      <label for="token">Token admin</label><input id="token" type="password" value="demo-token" autocomplete="off">
-      <button class="accion" id="b-sim">Iniciar simulación</button>
-      <div class="barra"><div id="progreso"></div></div>
-      <div id="sim-estado" class="nota">Sin simulación en curso.</div>
-      <pre id="sim-reporte" hidden></pre>
-    </div>
-    <div class="tarjeta">
-      <h2>Pronosticar (API pública)</h2>
-      <div class="fila">
-        <div><label for="p-part">Participante</label><input id="p-part" value="U0001" size="8"></div>
-        <div><label for="p-partido">Partido #</label><input id="p-partido" type="number" value="1" min="1" max="104"></div>
-        <div><label for="p-l">Local</label><input id="p-l" type="number" value="1" min="0" max="30"></div>
-        <div><label for="p-v">Visitante</label><input id="p-v" type="number" value="0" min="0" max="30"></div>
-      </div>
-      <button class="accion" id="b-pron">Enviar pronóstico</button>
-      <div id="pron-res" class="msg" hidden></div>
-      <p class="nota">El cierre lo decide el reloj del servidor, nunca la hora del navegador.</p>
-      <h2 style="margin-top:18px">Inyectar falla (matar un proceso)</h2>
-      <div class="fila">
-        <div><label for="f-obj">Objetivo</label><select id="f-obj"><option value="quiniela">Una quiniela</option><option value="partido">Un partido</option><option value="participante">Un participante</option></select></div>
-      </div>
-      <button class="accion peligro" id="b-falla">Matar proceso al azar</button>
-      <div id="falla-res" class="msg" hidden></div>
-    </div>
+  <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+   <h2 class="font-headline-sm text-headline-sm mb-space-md">Partidos</h2>
+   <label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="filtro-estado">Mostrar</label>
+   <select id="filtro-estado" class="mt-1 mb-space-sm bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5 font-body-md text-body-md"><option value="en_vivo">En vivo</option><option value="">Todos</option><option value="finalizado">Finalizados</option><option value="programado">Programados</option></select>
+   <div id="partidos" class="flex flex-col"></div>
   </div>
+ </div>
+ <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+  <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+   <h2 class="font-headline-sm text-headline-sm mb-space-md">Simulaci&oacute;n del escenario</h2>
+   <div class="flex flex-wrap gap-space-md">
+    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="s-part">Participantes</label><input id="s-part" type="number" value="5000" min="1" max="20000" class="mt-1 w-28 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
+    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="s-quin">Quinielas</label><input id="s-quin" type="number" value="50" min="1" max="200" class="mt-1 w-24 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
+    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="s-pts">Partidos</label><input id="s-pts" type="number" value="104" min="1" max="104" class="mt-1 w-24 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
+   </div>
+   <label class="flex items-center gap-2 mt-space-md font-body-md text-body-md"><input type="checkbox" id="s-caos" checked> Inyectar fallas durante los partidos</label>
+   <label class="block mt-space-md font-label-md text-label-md text-on-surface-variant uppercase" for="token">Token admin</label>
+   <input id="token" type="password" value="demo-token" autocomplete="off" class="mt-1 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5">
+   <button id="b-sim" class="mt-space-md ml-space-sm px-space-lg py-2 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg uppercase tracking-wide hover:opacity-90">Iniciar simulaci&oacute;n</button>
+   <div class="h-2 bg-surface-container-high rounded-full overflow-hidden mt-space-md"><div id="progreso" class="h-full bg-secondary transition-all" style="width:0"></div></div>
+   <div id="sim-estado" class="font-body-sm text-body-sm text-on-surface-variant mt-space-sm">Sin simulaci&oacute;n en curso.</div>
+   <pre id="sim-reporte" hidden class="mt-space-sm bg-primary-container text-inverse-on-surface rounded-lg p-space-md font-mono text-[11px] overflow-auto max-h-64"></pre>
+  </div>
+  <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+   <h2 class="font-headline-sm text-headline-sm mb-space-md">Pronosticar (API p&uacute;blica)</h2>
+   <div class="flex flex-wrap gap-space-md">
+    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="p-part">Participante</label><input id="p-part" value="U0001" class="mt-1 w-28 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
+    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="p-partido">Partido #</label><input id="p-partido" type="number" value="1" min="1" max="104" class="mt-1 w-20 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
+    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="p-l">Local</label><input id="p-l" type="number" value="1" min="0" max="30" class="mt-1 w-16 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
+    <div><label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="p-v">Visitante</label><input id="p-v" type="number" value="0" min="0" max="30" class="mt-1 w-16 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"></div>
+   </div>
+   <button id="b-pron" class="mt-space-md px-space-lg py-2 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg uppercase tracking-wide hover:opacity-90">Enviar pron&oacute;stico</button>
+   <div id="pron-res" hidden class="rounded px-space-md py-space-sm mt-space-sm font-body-md text-body-md"></div>
+   <p class="font-body-sm text-body-sm text-on-surface-variant mt-space-sm">El cierre lo decide el reloj del servidor, nunca la hora del navegador.</p>
+   <h2 class="font-headline-sm text-headline-sm mt-space-xl mb-space-md">Inyectar falla (matar un proceso)</h2>
+   <label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="f-obj">Objetivo</label>
+   <select id="f-obj" class="mt-1 bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5"><option value="quiniela">Una quiniela</option><option value="partido">Un partido</option><option value="participante">Un participante</option></select>
+   <button id="b-falla" class="mt-space-md ml-space-sm px-space-lg py-2 rounded-lg bg-error text-on-error font-label-lg text-label-lg uppercase tracking-wide hover:opacity-90">Matar proceso al azar</button>
+   <div id="falla-res" hidden class="rounded px-space-md py-space-sm mt-space-sm font-body-md text-body-md"></div>
+  </div>
+ </div>
 </section>
 
-<section id="v-detalle" hidden>
-  <div class="dos">
-    <div class="tarjeta"><h2>Elegir partido</h2>
-      <label for="d-sel">Partido</label><select id="d-sel"></select>
-      <div id="d-lista"></div></div>
-    <div class="tarjeta"><h2>Detalle</h2><div id="d-info" class="nota">Elige un partido.</div></div>
+<!-- ============ DETALLE DE PARTIDO (pantalla de Stitch) ============ -->
+<section id="v-detalle" hidden class="flex flex-col gap-space-lg">
+ <div class="flex flex-wrap items-center justify-between gap-space-md">
+  <div class="flex flex-wrap items-center gap-space-sm font-label-md text-label-md text-on-surface-variant uppercase tracking-wide">
+   <span>Torneo 2026</span><span>/</span><span id="d-ruta">Elige un partido</span>
   </div>
+  <div class="flex items-center gap-space-sm">
+   <label class="sr-only" for="d-sel">Partido</label>
+   <select id="d-sel" class="bg-surface-container-lowest border border-outline-variant rounded px-space-sm py-1.5 font-body-sm text-body-sm max-w-[320px]"></select>
+   <button id="b-sync" type="button" class="inline-flex items-center gap-1 px-space-md py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container font-label-md text-label-md uppercase tracking-wide">Actualizar</button>
+  </div>
+ </div>
+ <div id="d-hero" class="w-full bg-surface-container-lowest rounded-xl shadow-sm p-space-xl"></div>
+ <div id="d-var"></div>
+ <div id="d-stats" class="grid grid-cols-1 sm:grid-cols-3 gap-gutter"></div>
+ <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+  <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+   <h2 class="font-headline-sm text-headline-sm mb-space-md">Eventos del partido</h2>
+   <table class="w-full text-left font-body-sm text-body-sm"><thead class="bg-primary-container text-on-primary"><tr><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">Min</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase">Evento</th></tr></thead><tbody id="d-eventos" class="divide-y divide-surface-container-high"></tbody></table>
+  </div>
+  <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+   <h2 class="font-headline-sm text-headline-sm mb-space-sm flex items-center gap-2"><span class="h-2.5 w-2.5 rounded-full bg-secondary inline-block"></span>Se&ntilde;al SSE</h2>
+   <p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">Canal <span class="font-mono">/api/eventos</span>: eventos en tiempo real.</p>
+   <div id="sse-log" class="bg-primary-container text-inverse-on-surface rounded-lg p-space-md font-mono text-[11px] flex flex-col gap-space-sm h-72 overflow-y-auto shadow-inner"></div>
+  </div>
+ </div>
 </section>
 
-<section id="v-bitacora" hidden>
-  <div class="tarjeta"><h2>Bitácora de eventos (últimos 100)</h2>
-    <table><thead><tr><th>Nivel</th><th>Evento</th><th>Detalle</th><th class="n">#</th></tr></thead><tbody id="bitacora"></tbody></table></div>
+<!-- ============ BITACORA ============ -->
+<section id="v-bitacora" hidden class="flex flex-col gap-space-lg">
+ <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+  <div class="flex flex-wrap items-center justify-between gap-space-md mb-space-md">
+   <h2 class="font-headline-sm text-headline-sm">Bit&aacute;cora de eventos y alertas (&uacute;ltimos 100)</h2>
+   <div class="flex items-center gap-space-sm"><label class="font-label-md text-label-md text-on-surface-variant uppercase" for="b-nivel">Nivel</label>
+    <select id="b-nivel" class="bg-surface-container-low border border-outline-variant rounded px-space-sm py-1.5 font-body-sm text-body-sm"><option value="">Todos</option><option value="ok">ok</option><option value="alerta">alerta</option><option value="falla">falla</option></select></div>
+  </div>
+  <div class="overflow-x-auto"><table class="w-full text-left font-body-sm text-body-sm">
+   <thead class="bg-primary-container text-on-primary"><tr><th class="py-2 px-space-sm font-label-md text-label-md uppercase">Nivel</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase">Evento</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase">Detalle</th><th class="py-2 px-space-sm font-label-md text-label-md uppercase text-right">#</th></tr></thead>
+   <tbody id="bitacora" class="divide-y divide-surface-container-high"></tbody></table></div>
+ </div>
 </section>
+
+</div>
 </main>
+<footer class="w-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wide px-margin py-space-sm flex flex-wrap justify-between gap-space-sm">
+ <span>Sincronizaci&oacute;n operativa activa</span><span>FIFA World Cup 2026 &middot; Quiniela OTP</span>
+</footer>
 <script src="/app.js"></script>
 </body>
 </html>
